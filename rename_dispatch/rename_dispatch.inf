@@ -4,11 +4,8 @@
 
 [Version]
 Signature   = "$Windows NT$"
-; TODO - Change the Class and ClassGuid to match the Load Order Group value, see https://msdn.microsoft.com/en-us/windows/hardware/gg462963
-; Class       = "ActivityMonitor"                         ;This is determined by the work this filter driver does
-; ClassGuid   = {b86dff51-a31e-4bac-b3cf-e8cfe75c9fc2}    ;This value is determined by the Load Order Group value
-Class = "_TODO_Change_Class_appropriately_"
-ClassGuid = {_TODO_Change_ClassGuid_appropriately_}
+Class       = "ActivityMonitor"                         ;This is determined by the work this filter driver does
+ClassGuid   = {b86dff51-a31e-4bac-b3cf-e8cfe75c9fc2}    ;This value is determined by the Load Order Group value
 Provider    = %ManufacturerName%
 DriverVer   = 
 CatalogFile = rename_dispatch.cat
@@ -28,16 +25,6 @@ CopyFiles           = MiniFilter.DriverFiles
 [DefaultInstall.Services]
 AddService          = %ServiceName%,,MiniFilter.Service
 
-;;
-;; Default uninstall sections
-;;
-
-[DefaultUninstall]
-DelFiles   = MiniFilter.DriverFiles
-
-[DefaultUninstall.Services]
-DelService = %ServiceName%,0x200      ;Ensure service is stopped before deleting
-
 ;
 ; Services Section
 ;
@@ -50,9 +37,7 @@ Dependencies     = "FltMgr"
 ServiceType      = 2                            ;SERVICE_FILE_SYSTEM_DRIVER
 StartType        = 3                            ;SERVICE_DEMAND_START
 ErrorControl     = 1                            ;SERVICE_ERROR_NORMAL
-; TODO - Change the Load Order Group value
-; LoadOrderGroup = "FSFilter Activity Monitor"
-LoadOrderGroup = "_TODO_Change_LoadOrderGroup_appropriately_"
+LoadOrderGroup   = "FSFilter Activity Monitor"
 AddReg           = MiniFilter.AddRegistry
 
 ;
@@ -84,7 +69,6 @@ rename_dispatch.sys = 1,,
 ;;
 
 [Strings]
-; TODO - Add your manufacturer
 ManufacturerName        = "Template"
 ServiceDescription      = "rename_dispatch Mini-Filter Driver"
 ServiceName             = "rename_dispatch"
@@ -94,6 +78,5 @@ DiskId1                 = "rename_dispatch Device Installation Disk"
 ;Instances specific information.
 DefaultInstance         = "rename_dispatch Instance"
 Instance1.Name          = "rename_dispatch Instance"
-; TODO - Change the altitude value, see https://msdn.microsoft.com/en-us/windows/hardware/drivers/ifs/load-order-groups-and-altitudes-for-minifilter-drivers
-Instance1.Altitude       = "_TODO_Change_Altitude_appropriately_"
+Instance1.Altitude      = "378249"
 Instance1.Flags         = 0x0              ; Allow all attachments
