@@ -35,6 +35,7 @@ namespace
       freg.Size = sizeof(freg);
       freg.Version = FLT_REGISTRATION_VERSION;
       freg.FilterUnloadCallback = unload;
+      freg.OperationRegistration = operations::get_operations();
 
       stat = FltRegisterFilter(drv, &freg, &filter);
       if (NT_SUCCESS(stat))
