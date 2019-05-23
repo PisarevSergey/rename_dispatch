@@ -41,6 +41,9 @@
     <ClCompile Include="operations.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="stream_context.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="common.h">
@@ -56,6 +59,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="operations.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="stream_context.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

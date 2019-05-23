@@ -63,6 +63,11 @@ namespace
     }
 
     NTSTATUS start_filtering() { return FltStartFiltering(filter); }
+
+    NTSTATUS allocate_context(_In_ FLT_CONTEXT_TYPE ContextType, _In_ SIZE_T ContextSize, _In_ POOL_TYPE PoolType, _Out_ PFLT_CONTEXT *ReturnedContext)
+    {
+      return FltAllocateContext(filter, ContextType, ContextSize, PoolType, ReturnedContext);
+    }
   private:
     PFLT_FILTER filter;
   };

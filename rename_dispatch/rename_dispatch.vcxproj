@@ -133,12 +133,14 @@
     <ClCompile Include="driver.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="operations.cpp" />
+    <ClCompile Include="stream_context.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="common.h" />
     <ClInclude Include="create_dispatch.h" />
     <ClInclude Include="driver.h" />
     <ClInclude Include="operations.h" />
+    <ClInclude Include="stream_context.h" />
     <ClInclude Include="tracing.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

@@ -7,3 +7,4 @@
 #include "driver.h"
 #include "create_dispatch.h"
 #include "operations.h"
+#include "stream_context.h"
