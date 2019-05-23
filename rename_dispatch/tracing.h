@@ -5,7 +5,7 @@
         WPP_DEFINE_BIT(MAIN)                                                       \
         WPP_DEFINE_BIT(CREATE_DISPATCH)                                            \
         WPP_DEFINE_BIT(STREAM_CONTEXT)                                             \
-        WPP_DEFINE_BIT(CALLOUT_REGISTRATION)                                       \
+        WPP_DEFINE_BIT(SET_INFO_DISPATCH)                                          \
         WPP_DEFINE_BIT(DRIVER) )
 
 #define WPP_LEVEL_FLAGS_LOGGER(lvl,flags) \

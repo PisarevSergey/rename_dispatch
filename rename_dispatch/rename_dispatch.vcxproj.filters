@@ -44,6 +44,9 @@
     <ClCompile Include="stream_context.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="set_info_dispatch.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="common.h">
@@ -62,6 +65,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="stream_context.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="set_info_dispatch.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="support.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

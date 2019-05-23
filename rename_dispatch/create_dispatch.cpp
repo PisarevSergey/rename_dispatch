@@ -116,7 +116,7 @@ create_dispatch::post(
     }
     info_message(CREATE_DISPATCH, "this is regular file, continue");
 
-    auto str_ctx(stream_context::create_context(stat));
+    support::auto_flt_context<stream_context::context> sc(stream_context::create_context(stat));
     if (!NT_SUCCESS(stat))
     {
       error_message(CREATE_DISPATCH, "stream context creation failed with status %!STATUS!", stat);
@@ -127,9 +127,8 @@ create_dispatch::post(
     stat = FltSetStreamContext(data->Iopb->TargetInstance,
                                data->Iopb->TargetFileObject,
                                FLT_SET_CONTEXT_KEEP_IF_EXISTS,
-                               str_ctx,
+                               sc,
                                0);
-    FltReleaseContext(str_ctx);
     if (!NT_SUCCESS(stat))
     {
       error_message(CREATE_DISPATCH, "FltSetStreamContext failed with status %!STATUS!", stat);
