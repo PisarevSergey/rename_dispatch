@@ -3,6 +3,8 @@
 
 extern "C" NTSTATUS DriverEntry(PDRIVER_OBJECT drv, PUNICODE_STRING)
 {
+  ExInitializeDriverRuntime(DrvRtPoolNxOptIn);
+
   NTSTATUS stat(STATUS_UNSUCCESSFUL);
   driver* d(0);
 
