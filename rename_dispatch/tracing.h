@@ -3,7 +3,7 @@
 #define WPP_CONTROL_GUIDS \
     WPP_DEFINE_CONTROL_GUID(TraceGuid,(31757340, EFA5, 4245, 89BB, B54E9C98006C),  \
         WPP_DEFINE_BIT(MAIN)                                                       \
-        WPP_DEFINE_BIT(IP4_CALLBACKS)                                              \
+        WPP_DEFINE_BIT(CREATE_DISPATCH)                                            \
         WPP_DEFINE_BIT(ALLOCATOR)                                                  \
         WPP_DEFINE_BIT(CALLOUT_REGISTRATION)                                       \
         WPP_DEFINE_BIT(DRIVER) )
