@@ -13,5 +13,7 @@ namespace stream_context
 
   void cleanup(PFLT_CONTEXT Context, FLT_CONTEXT_TYPE ContextType);
 
+  size_t get_size();
+
   context* create_context(NTSTATUS& stat);
 }

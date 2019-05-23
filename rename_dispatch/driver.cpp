@@ -35,7 +35,15 @@ namespace
       freg.Size = sizeof(freg);
       freg.Version = FLT_REGISTRATION_VERSION;
       freg.FilterUnloadCallback = unload;
-      freg.OperationRegistration = operations::get_operations();
+
+      FLT_CONTEXT_REGISTRATION context_reg[] =
+      {
+        {FLT_STREAM_CONTEXT, 0, stream_context::cleanup, stream_context::get_size(), 'crtS'},
+        {FLT_CONTEXT_END}
+      };
+
+      freg.ContextRegistration = context_reg;
+      freg.OperationRegistration = operations::get_registration();
 
       stat = FltRegisterFilter(drv, &freg, &filter);
       if (NT_SUCCESS(stat))

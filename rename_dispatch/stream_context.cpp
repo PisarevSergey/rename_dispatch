@@ -13,6 +13,8 @@ namespace
   };
 }
 
+size_t stream_context::get_size() { return sizeof(top_stream_context); }
+
 void stream_context::cleanup(PFLT_CONTEXT Context, FLT_CONTEXT_TYPE)
 {
   delete static_cast<stream_context::context*>(Context);
@@ -21,7 +23,7 @@ void stream_context::cleanup(PFLT_CONTEXT Context, FLT_CONTEXT_TYPE)
 stream_context::context* stream_context::create_context(NTSTATUS& stat)
 {
   PFLT_CONTEXT ctx(0);
-  stat = get_driver()->allocate_context(FLT_STREAM_CONTEXT, sizeof(top_stream_context), NonPagedPool, &ctx);
+  stat = get_driver()->allocate_context(FLT_STREAM_CONTEXT, stream_context::get_size(), NonPagedPool, &ctx);
   if (NT_SUCCESS(stat))
   {
     info_message(STREAM_CONTEXT, "stream context allocation success");

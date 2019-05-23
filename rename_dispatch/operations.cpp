@@ -9,7 +9,7 @@ namespace
   };
 }
 
-FLT_OPERATION_REGISTRATION* operations::get_operations()
+FLT_OPERATION_REGISTRATION* operations::get_registration()
 {
   return ops;
 }
