@@ -5,6 +5,11 @@ namespace
 {
   class top_stream_context : public stream_context::context
   {
+  public:
+    top_stream_context(NTSTATUS& stat)
+    {
+      stat = STATUS_SUCCESS;
+    }
   };
 }
 
@@ -20,7 +25,17 @@ stream_context::context* stream_context::create_context(NTSTATUS& stat)
   if (NT_SUCCESS(stat))
   {
     info_message(STREAM_CONTEXT, "stream context allocation success");
-    new (ctx) top_stream_context;
+    new (ctx) top_stream_context(stat);
+    if (NT_SUCCESS(stat))
+    {
+      info_message(STREAM_CONTEXT, "stream context initialization success");
+    }
+    else
+    {
+      FltReleaseContext(ctx);
+      ctx = 0;
+      error_message(STREAM_CONTEXT, "failed to initialize stream context with status %!STATUS!", stat);
+    }
   }
   else
   {
