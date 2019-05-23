@@ -10,6 +10,23 @@ namespace
     return STATUS_SUCCESS;
   }
 
+  NTSTATUS
+    attach(_In_ PCFLT_RELATED_OBJECTS,
+           _In_ FLT_INSTANCE_SETUP_FLAGS,
+           _In_ DEVICE_TYPE VolumeDeviceType,
+           _In_ FLT_FILESYSTEM_TYPE)
+  {
+    NTSTATUS stat(STATUS_FLT_DO_NOT_ATTACH);
+
+    if ((FILE_DEVICE_DISK_FILE_SYSTEM    == VolumeDeviceType) ||
+        (FILE_DEVICE_NETWORK_FILE_SYSTEM == VolumeDeviceType))
+    {
+      stat = STATUS_SUCCESS;
+    }
+
+    return stat;
+  }
+
   class tracing_driver : public driver
   {
   public:
@@ -35,6 +52,7 @@ namespace
       freg.Size = sizeof(freg);
       freg.Version = FLT_REGISTRATION_VERSION;
       freg.FilterUnloadCallback = unload;
+      freg.InstanceSetupCallback = attach;
 
       FLT_CONTEXT_REGISTRATION context_reg[] =
       {
