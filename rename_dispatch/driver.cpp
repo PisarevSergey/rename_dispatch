@@ -16,10 +16,12 @@ namespace
     tracing_driver()
     {
       WPP_INIT_TRACING(0, 0);
+      verbose_message(DRIVER, "tracing started");
     }
 
     ~tracing_driver()
     {
+      verbose_message(DRIVER, "stopping tracing");
       WPP_CLEANUP(0);
     }
   };
@@ -27,7 +29,7 @@ namespace
   class fltmgr_filter_driver : public tracing_driver
   {
   public:
-    fltmgr_filter_driver(NTSTATUS& stat, PDRIVER_OBJECT drv)
+    fltmgr_filter_driver(NTSTATUS& stat, PDRIVER_OBJECT drv) : filter(0)
     {
       FLT_REGISTRATION freg = { 0 };
       freg.Size = sizeof(freg);
@@ -35,11 +37,28 @@ namespace
       freg.FilterUnloadCallback = unload;
 
       stat = FltRegisterFilter(drv, &freg, &filter);
+      if (NT_SUCCESS(stat))
+      {
+        info_message(DRIVER, "FltRegisterFilter success");
+      }
+      else
+      {
+        filter = 0;
+        error_message(DRIVER, "FltRegisterFilter failed with status %!STATUS!", stat);
+      }
     }
 
     ~fltmgr_filter_driver()
     {
-      FltUnregisterFilter(filter);
+      if (filter)
+      {
+        info_message(DRIVER, "unregistering filter");
+        FltUnregisterFilter(filter);
+      }
+      else
+      {
+        info_message(DRIVER, "filter wasn't registered");
+      }
     }
 
     NTSTATUS start_filtering() { return FltStartFiltering(filter); }
@@ -63,8 +82,13 @@ driver* create_driver(NTSTATUS& stat, PDRIVER_OBJECT drv)
 {
   stat = STATUS_UNSUCCESSFUL;
   auto d(new(driver_memory) top_driver(stat, drv));
-  if (!NT_SUCCESS(stat))
+  if (NT_SUCCESS(stat))
   {
+    info_message(DRIVER, "driver ctor success");
+  }
+  else
+  {
+    error_message(DRIVER, "driver ctor failed with status %!STATUS!", stat);
     delete d;
     d = 0;
   }
