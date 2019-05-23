@@ -73,10 +73,71 @@ create_dispatch::pre(
 
 FLT_POSTOP_CALLBACK_STATUS
 create_dispatch::post(
-  _Inout_  PFLT_CALLBACK_DATA       /*data*/,
+  _Inout_  PFLT_CALLBACK_DATA       data,
   _In_     PCFLT_RELATED_OBJECTS    ,
   _In_opt_ PVOID                    ,
-  _In_     FLT_POST_OPERATION_FLAGS /*flags*/)
+  _In_     FLT_POST_OPERATION_FLAGS flags)
 {
+  do
+  {
+    if (FLTFL_POST_OPERATION_DRAINING & flags)
+    {
+      info_message(CREATE_DISPATCH, "filter draining, exiting");
+      break;
+    }
+    info_message(CREATE_DISPATCH, "filter is not draining, continue");
+
+    if (!NT_SUCCESS(data->IoStatus.Status))
+    {
+      info_message(CREATE_DISPATCH, "create failed with status %!STATUS!, skipping", data->IoStatus.Status);
+      break;
+    }
+    info_message(CREATE_DISPATCH, "create successful");
+
+    if (STATUS_REPARSE == data->IoStatus.Status)
+    {
+      info_message(CREATE_DISPATCH, "reparse point, skipping");
+      break;
+    }
+
+    BOOLEAN is_dir;
+    NTSTATUS stat(FltIsDirectory(data->Iopb->TargetFileObject, data->Iopb->TargetInstance, &is_dir));
+    if (!NT_SUCCESS(stat))
+    {
+      error_message(CREATE_DISPATCH, "FltIsDirectory failed with status %!STATUS!", stat);
+      break;
+    }
+    info_message(CREATE_DISPATCH, "FltIsDirectory success");
+
+    if (TRUE == is_dir)
+    {
+      info_message(CREATE_DISPATCH, "this is directory, skipping");
+      break;
+    }
+    info_message(CREATE_DISPATCH, "this is regular file, continue");
+
+    auto str_ctx(stream_context::create_context(stat));
+    if (!NT_SUCCESS(stat))
+    {
+      error_message(CREATE_DISPATCH, "stream context creation failed with status %!STATUS!", stat);
+      break;
+    }
+    info_message(CREATE_DISPATCH, "stream context creation success");
+
+    stat = FltSetStreamContext(data->Iopb->TargetInstance,
+                               data->Iopb->TargetFileObject,
+                               FLT_SET_CONTEXT_KEEP_IF_EXISTS,
+                               str_ctx,
+                               0);
+    FltReleaseContext(str_ctx);
+    if (!NT_SUCCESS(stat))
+    {
+      error_message(CREATE_DISPATCH, "FltSetStreamContext failed with status %!STATUS!", stat);
+      break;
+    }
+    info_message(CREATE_DISPATCH, "FltSetStreamContext success");
+
+  } while (false);
+
   return FLT_POSTOP_FINISHED_PROCESSING;
 }
