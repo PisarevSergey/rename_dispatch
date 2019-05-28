@@ -24,6 +24,16 @@ namespace support
       return tmp;
     }
 
+    void clear()
+    {
+      ctx = 0;
+    }
+
+    T* get()
+    {
+      return ctx;
+    }
+
     T* operator->()
     {
       return ctx;
