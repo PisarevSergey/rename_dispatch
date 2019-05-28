@@ -10,7 +10,8 @@ set_info_dispatch::pre(_Inout_ PFLT_CALLBACK_DATA    data,
 
   do
   {
-    if (data->Iopb->Parameters.SetFileInformation.FileInformationClass != FileRenameInformation)
+    if ((data->Iopb->Parameters.SetFileInformation.FileInformationClass != FileRenameInformation) &&
+        (data->Iopb->Parameters.SetFileInformation.FileInformationClass != FileRenameInformationEx))
     {
       info_message(SET_INFO_DISPATCH, "this is not rename operation, skipping");
       break;
