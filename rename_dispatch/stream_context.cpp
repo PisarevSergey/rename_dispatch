@@ -3,7 +3,57 @@
 
 namespace
 {
-  class top_stream_context : public stream_context::context
+  class rename_infos_list : public support::list<rename_info::info>
+  {
+  public:
+    void insert_rename_info(rename_info::info* ren_info)
+    {
+      lock();
+
+      simple_push_unsafe(ren_info);
+
+      unlock();
+    }
+
+    rename_info::info* extract_rename_info_by_thread(PETHREAD t)
+    {
+      rename_info::info* ren_info(0);
+
+      lock();
+
+      for (rename_info::info* i = static_cast<rename_info::info*>(head.Flink); i != &head; i = static_cast<rename_info::info*>(i->Flink))
+      {
+        if (i->get_thread() == t)
+        {
+          RemoveEntryList(i);
+          ren_info = i;
+          break;
+        }
+      }
+
+      unlock();
+
+      return ren_info;
+    }
+  };
+
+  class stream_context_with_rename_infos : public stream_context::context
+  {
+  public:
+    void insert_rename_info(rename_info::info* ren_info)
+    {
+      ren_info_list.insert_rename_info(ren_info);
+    }
+
+    rename_info::info* extract_rename_info_by_thread(PETHREAD thread)
+    {
+      return ren_info_list.extract_rename_info_by_thread(thread);
+    }
+  private:
+    rename_infos_list ren_info_list;
+  };
+
+  class top_stream_context : public stream_context_with_rename_infos
   {
   public:
     top_stream_context(NTSTATUS& stat)

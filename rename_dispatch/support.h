@@ -1,7 +1,5 @@
 #pragma once
 
-#pragma once
-
 namespace support
 {
   template<typename T>
@@ -53,7 +51,7 @@ namespace support
     list()
     {
       InitializeListHead(&head);
-      KeInitializeMutex(&guard, 0);
+      ExInitializeFastMutex(&guard);
     }
 
     ~list()
@@ -85,10 +83,10 @@ namespace support
       return e;
     }
   private:
-    KMUTEX guard;
+    FAST_MUTEX guard;
   protected:
     LIST_ENTRY head;
-    void lock() { KeWaitForMutexObject(&guard, Executive, KernelMode, FALSE, 0); }
-    void unlock() { KeReleaseMutex(&guard, FALSE); }
+    void lock() { ExAcquireFastMutex(&guard); }
+    void unlock() { ExReleaseFastMutex(&guard); }
   };
 }
