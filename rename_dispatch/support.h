@@ -69,6 +69,11 @@ namespace support
       }
     }
 
+    T* get()
+    {
+      return ptr;
+    }
+
     T* operator->()
     {
       return ptr;
@@ -81,6 +86,10 @@ namespace support
       ptr = 0;
 
       return tmp_ptr;
+    }
+    void clear()
+    {
+      ptr = 0;
     }
   private:
     T* ptr;
