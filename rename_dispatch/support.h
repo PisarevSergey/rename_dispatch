@@ -55,6 +55,38 @@ namespace support
   };
 
   template <typename T>
+  class auto_pointer
+  {
+  public:
+    explicit auto_pointer(T* p = 0) : ptr(p)
+    {}
+
+    ~auto_pointer()
+    {
+      if (ptr)
+      {
+        delete ptr;
+      }
+    }
+
+    T* operator->()
+    {
+      return ptr;
+    }
+
+    T* release()
+    {
+      T* tmp_ptr(ptr);
+
+      ptr = 0;
+
+      return tmp_ptr;
+    }
+  private:
+    T* ptr;
+  };
+
+  template <typename T>
   class list
   {
   public:
