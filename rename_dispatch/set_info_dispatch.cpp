@@ -80,15 +80,6 @@ set_info_dispatch::pre(_Inout_ PFLT_CALLBACK_DATA    data,
     }
     info_message(SET_INFO_DISPATCH, "this is rename operation");
 
-    if (FLT_IS_FASTIO_OPERATION(data))
-    {
-      info_message(SET_INFO_DISPATCH, "failing fast i/o, request irp-based operation");
-      fs_stat = FLT_PREOP_DISALLOW_FASTIO;
-      break;
-    }
-    ASSERT(FLT_IS_IRP_OPERATION(data));
-    info_message(SET_INFO_DISPATCH, "this is irp-based operation, continue dispatch");
-
     support::auto_flt_context<stream_context::context> sc;
     NTSTATUS stat(FltGetStreamContext(data->Iopb->TargetInstance, data->Iopb->TargetFileObject, sc));
     if (!NT_SUCCESS(stat))
@@ -97,6 +88,15 @@ set_info_dispatch::pre(_Inout_ PFLT_CALLBACK_DATA    data,
       break;
     }
     info_message(SET_INFO_DISPATCH, "FltGetStreamContext success");
+
+    if (FLT_IS_FASTIO_OPERATION(data))
+    {
+      info_message(SET_INFO_DISPATCH, "failing fast i/o, request irp-based operation");
+      fs_stat = FLT_PREOP_DISALLOW_FASTIO;
+      break;
+    }
+    ASSERT(FLT_IS_IRP_OPERATION(data));
+    info_message(SET_INFO_DISPATCH, "this is irp-based operation, continue dispatch");
 
     bool replace_if_exists_cleared(data->Iopb->Parameters.SetFileInformation.ReplaceIfExists ? true : false);
 
