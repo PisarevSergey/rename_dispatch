@@ -6,7 +6,7 @@ namespace
   struct rename_work_item_context
   {
     void* stream_context;
-    PETHREAD current_thread;
+    rename_info::info* ren_info;
     bool deallocate_to_pool;
   };
 
@@ -18,11 +18,12 @@ namespace
     ASSERT(context);
     ASSERT(PASSIVE_LEVEL == KeGetCurrentIrql());
 
-    rename_work_item_context* ren_wi_context(static_cast<rename_work_item_context*>(context));
-    support::auto_flt_context<stream_context::context> sc(ren_wi_context->stream_context);
+    rename_work_item_context* ren_wi_ctx(static_cast<rename_work_item_context*>(context));
+    support::auto_pointer<rename_info::info> ren_info(ren_wi_ctx->ren_info);
 
-    auto ren_info(sc->extract_rename_info_by_thread(ren_wi_context->current_thread));
-    if (ren_info)
+    support::auto_flt_context<stream_context::context> sc(ren_wi_ctx->stream_context);
+
+    if (ren_info.get())
     {
       if (ren_info->is_replace_flag_cleared())
       {
@@ -45,13 +46,11 @@ namespace
 
         FltReissueSynchronousIo(data->Iopb->TargetInstance, data);
       }
-
-      delete ren_info;
     }
 
-    if (ren_wi_context->deallocate_to_pool)
+    if (ren_wi_ctx->deallocate_to_pool)
     {
-      ExFreePool(ren_wi_context);
+      ExFreePool(ren_wi_ctx);
     }
 
     if (work_item)
@@ -150,6 +149,9 @@ set_info_dispatch::post(_Inout_  PFLT_CALLBACK_DATA       data,
 {
   support::auto_flt_context<stream_context::context> sc(completion_context);
 
+  support::auto_pointer<rename_info::info> ren_info(sc->extract_rename_info_by_thread(PsGetCurrentThread()));
+  ASSERT(ren_info.get());
+
   FLT_POSTOP_CALLBACK_STATUS fs_stat(FLT_POSTOP_FINISHED_PROCESSING);
 
   do
@@ -194,7 +196,7 @@ set_info_dispatch::post(_Inout_  PFLT_CALLBACK_DATA       data,
     info_message(SET_INFO_DISPATCH, "rename work item context allocation success");
 
     work_item_ctx->stream_context = sc.get();
-    work_item_ctx->current_thread = PsGetCurrentThread();
+    work_item_ctx->ren_info = ren_info.get();
     work_item_ctx->deallocate_to_pool = true;
 
     NTSTATUS stat = FltQueueDeferredIoWorkItem(work_item, data, post_rename_dispatch, DelayedWorkQueue, work_item_ctx);
@@ -207,6 +209,7 @@ set_info_dispatch::post(_Inout_  PFLT_CALLBACK_DATA       data,
     }
     info_message(SET_INFO_DISPATCH, "FltQueueDeferredIoWorkItem success");
     sc.clear();
+    ren_info.clear();
 
     fs_stat = FLT_POSTOP_MORE_PROCESSING_REQUIRED;
 
