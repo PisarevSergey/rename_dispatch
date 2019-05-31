@@ -20,7 +20,6 @@ namespace
 
     rename_work_item_context* ren_wi_ctx(static_cast<rename_work_item_context*>(context));
     support::auto_pointer<rename_info::info> ren_info(ren_wi_ctx->ren_info);
-
     support::auto_flt_context<stream_context::context> sc(ren_wi_ctx->stream_context);
 
     if (ren_info.get())
@@ -55,10 +54,13 @@ namespace
 
     if (work_item)
     {
-      FltFreeDeferredIoWorkItem(work_item);
+      FltCompletePendedPostOperation(data);
     }
 
-    FltCompletePendedPostOperation(data);
+    if (work_item)
+    {
+      FltFreeDeferredIoWorkItem(work_item);
+    }
   }
 }
 
