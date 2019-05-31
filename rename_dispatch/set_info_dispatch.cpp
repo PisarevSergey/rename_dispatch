@@ -55,10 +55,6 @@ namespace
     if (work_item)
     {
       FltCompletePendedPostOperation(data);
-    }
-
-    if (work_item)
-    {
       FltFreeDeferredIoWorkItem(work_item);
     }
   }
@@ -172,41 +168,58 @@ set_info_dispatch::post(_Inout_  PFLT_CALLBACK_DATA       data,
     }
     info_message(SET_INFO_DISPATCH, "rename failed due to collision, dispatching");
 
-    auto work_item = FltAllocateDeferredIoWorkItem();
-    if (!work_item)
+    if (PASSIVE_LEVEL == KeGetCurrentIrql())
     {
-      error_message(SET_INFO_DISPATCH, "FltAllocateDeferredIoWorkItem failed");
-      break;
-    }
-    info_message(SET_INFO_DISPATCH, "FltAllocateDeferredIoWorkItem success");
+      info_message(SET_INFO_DISPATCH, "current IRQL is PASSIVE_LEVEL, no need to queue");
+      rename_work_item_context work_item_ctx;
+      work_item_ctx.stream_context = sc.release();
+      work_item_ctx.ren_info = ren_info.release();
+      work_item_ctx.deallocate_to_pool = false;
 
-    rename_work_item_context* work_item_ctx = static_cast<rename_work_item_context*>(ExAllocatePoolWithTag(PagedPool,
-      sizeof(*work_item_ctx), 'tciW'));
-    if (!work_item_ctx)
+      post_rename_dispatch(0, data, &work_item_ctx);
+
+      fs_stat = FLT_POSTOP_FINISHED_PROCESSING;
+    }
+    else
     {
-      FltFreeDeferredIoWorkItem(work_item);
-      error_message(SET_INFO_DISPATCH, "failed to allocate rename work item context");
-      break;
+      info_message(SET_INFO_DISPATCH, "not PASSIVE_LEVEL, need to actually queue work item");
+
+      auto work_item = FltAllocateDeferredIoWorkItem();
+      if (!work_item)
+      {
+        error_message(SET_INFO_DISPATCH, "FltAllocateDeferredIoWorkItem failed");
+        break;
+      }
+      info_message(SET_INFO_DISPATCH, "FltAllocateDeferredIoWorkItem success");
+
+      rename_work_item_context* work_item_ctx = static_cast<rename_work_item_context*>(ExAllocatePoolWithTag(PagedPool,
+        sizeof(*work_item_ctx), 'tciW'));
+      if (!work_item_ctx)
+      {
+        FltFreeDeferredIoWorkItem(work_item);
+        error_message(SET_INFO_DISPATCH, "failed to allocate rename work item context");
+        break;
+      }
+      info_message(SET_INFO_DISPATCH, "rename work item context allocation success");
+
+      work_item_ctx->stream_context = sc.get();
+      work_item_ctx->ren_info = ren_info.get();
+      work_item_ctx->deallocate_to_pool = true;
+
+      NTSTATUS stat = FltQueueDeferredIoWorkItem(work_item, data, post_rename_dispatch, DelayedWorkQueue, work_item_ctx);
+      if (!NT_SUCCESS(stat))
+      {
+        ExFreePool(work_item_ctx);
+        FltFreeDeferredIoWorkItem(work_item);
+        error_message(SET_INFO_DISPATCH, "FltQueueDeferredIoWorkItem failed with status %!STATUS!", stat);
+        break;
+      }
+      info_message(SET_INFO_DISPATCH, "FltQueueDeferredIoWorkItem success");
+      sc.clear();
+      ren_info.clear();
+
+      fs_stat = FLT_POSTOP_MORE_PROCESSING_REQUIRED;
     }
-    info_message(SET_INFO_DISPATCH, "rename work item context allocation success");
-
-    work_item_ctx->stream_context = sc.get();
-    work_item_ctx->ren_info = ren_info.get();
-    work_item_ctx->deallocate_to_pool = true;
-
-    NTSTATUS stat = FltQueueDeferredIoWorkItem(work_item, data, post_rename_dispatch, DelayedWorkQueue, work_item_ctx);
-    if (!NT_SUCCESS(stat))
-    {
-      ExFreePool(work_item_ctx);
-      FltFreeDeferredIoWorkItem(work_item);
-      error_message(SET_INFO_DISPATCH, "FltQueueDeferredIoWorkItem failed with status %!STATUS!", stat);
-      break;
-    }
-    info_message(SET_INFO_DISPATCH, "FltQueueDeferredIoWorkItem success");
-    sc.clear();
-    ren_info.clear();
-
-    fs_stat = FLT_POSTOP_MORE_PROCESSING_REQUIRED;
 
   } while (false);
 
