@@ -163,13 +163,6 @@ set_info_dispatch::post(_Inout_  PFLT_CALLBACK_DATA       data,
     }
     info_message(SET_INFO_DISPATCH, "filter is not unloading, continue processing");
 
-    if (TRUE == FLT_IS_REISSUED_IO(data))
-    {
-      info_message(SET_INFO_DISPATCH, "reissued i/o, skipping");
-      break;
-    }
-    info_message(SET_INFO_DISPATCH, "not a reissued i/o, continue processing");
-
     if (data->IoStatus.Status != STATUS_OBJECT_NAME_COLLISION)
     {
       info_message(SET_INFO_DISPATCH, "final operation status is %!STATUS!, skipping", data->IoStatus.Status);
