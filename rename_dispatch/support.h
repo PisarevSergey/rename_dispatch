@@ -96,6 +96,44 @@ namespace support
   };
 
   template <typename T>
+  class auto_pool_allocation
+  {
+  public:
+    explicit auto_pool_allocation(void* allocation = 0) : allocated_mem(static_cast<T*>(allocation))
+    {}
+
+    ~auto_pool_allocation()
+    {
+      if (allocated_mem)
+      {
+        ExFreePool(allocated_mem);
+        allocated_mem = 0;
+      }
+    }
+
+    void reset(void* new_allocation = 0)
+    {
+      if (allocated_mem)
+      {
+        ExFreePool(allocated_mem);
+      }
+      allocated_mem = static_cast<T*>(new_allocation);
+    }
+
+    T* get()
+    {
+      return allocated_mem;
+    }
+
+    T* operator->()
+    {
+      return allocated_mem;
+    }
+  private:
+    T* allocated_mem;
+  };
+
+  template <typename T>
   class list
   {
   public:
