@@ -222,6 +222,8 @@ namespace support
       h = 0;
     }
 
+    HANDLE release();
+
     operator HANDLE() { return h; }
     operator PHANDLE() { return &h; }
   private:
@@ -239,6 +241,8 @@ namespace support
     {
       h = 0;
     }
+
+    HANDLE release();
 
     operator HANDLE() { return h; }
     operator PHANDLE() { return &h; }

@@ -22,6 +22,8 @@ namespace
     support::auto_pointer<rename_info::info> ren_info(ren_wi_ctx->ren_info);
     support::auto_flt_context<stream_context::context> sc(ren_wi_ctx->stream_context);
 
+    support::read_target_file_for_rename(data);
+
     if (ren_info.get())
     {
       if (ren_info->is_replace_flag_cleared())

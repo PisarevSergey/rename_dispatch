@@ -3,7 +3,8 @@
 namespace
 {
   NTSTATUS open_target_file_for_rename(PFLT_CALLBACK_DATA data,
-    FILE_OBJECT** target_file_object)
+    FILE_OBJECT** output_target_file_object,
+    HANDLE* output_target_file_handle)
   {
     NTSTATUS stat(STATUS_UNSUCCESSFUL);
 
@@ -82,12 +83,21 @@ namespace
         target_file_obj.clear();
         break;
       }
-      *target_file_object = target_file_obj;
+      *output_target_file_object = target_file_obj.release();
+      *output_target_file_handle = target_file_handle.release();
 
     } while (false);
 
     return stat;
   }
+}
+
+HANDLE support::auto_handle::release()
+{
+  HANDLE tmp(h);
+  h = 0;
+
+  return tmp;
 }
 
 support::auto_handle::~auto_handle()
@@ -97,6 +107,14 @@ support::auto_handle::~auto_handle()
     ZwClose(h);
     h = 0;
   }
+}
+
+HANDLE support::auto_flt_handle::release()
+{
+  HANDLE tmp(h);
+  h = 0;
+
+  return tmp;
 }
 
 
@@ -120,7 +138,8 @@ NTSTATUS support::read_target_file_for_rename(PFLT_CALLBACK_DATA data)
   do
   {
     support::auto_referenced_object<FILE_OBJECT> target_file_object;
-    stat = open_target_file_for_rename(data, target_file_object);
+    support::auto_flt_handle target_file_handle;
+    stat = open_target_file_for_rename(data, target_file_object, target_file_handle);
     if (!NT_SUCCESS(stat))
     {
       break;
