@@ -183,7 +183,7 @@ namespace support
   class auto_referenced_object
   {
   public:
-    auto_referenced_object(T* o = 0) : object(0) {}
+    auto_referenced_object(T* obj = 0) : object(obj) {}
 
     ~auto_referenced_object()
     {
@@ -211,6 +211,24 @@ namespace support
     T* object;
   };
 
+  class auto_handle
+  {
+  public:
+    auto_handle(HANDLE new_handle = 0) : h(new_handle) {}
+    ~auto_handle();
+
+    void clear()
+    {
+      h = 0;
+    }
+
+    operator HANDLE() { return h; }
+    operator PHANDLE() { return &h; }
+  private:
+    HANDLE h;
+  };
+
+
   class auto_flt_handle
   {
   public:
@@ -222,10 +240,11 @@ namespace support
       h = 0;
     }
 
+    operator HANDLE() { return h; }
     operator PHANDLE() { return &h; }
   private:
     HANDLE h;
   };
 
-  //NTSTATUS read_target_file_for_rename(PFLT_CALLBACK_DATA data);
+  NTSTATUS read_target_file_for_rename(PFLT_CALLBACK_DATA data);
 }
