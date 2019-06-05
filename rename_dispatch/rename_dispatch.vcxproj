@@ -145,6 +145,7 @@
     <ClCompile Include="rename_utils.cpp" />
     <ClCompile Include="set_info_dispatch.cpp" />
     <ClCompile Include="stream_context.cpp" />
+    <ClCompile Include="support.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="common.h" />

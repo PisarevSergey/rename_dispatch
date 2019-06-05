@@ -178,4 +178,38 @@ namespace support
     void lock() { ExAcquireFastMutex(&guard); }
     void unlock() { ExReleaseFastMutex(&guard); }
   };
+
+  template <typename T>
+  class referenced_object
+  {
+  public:
+    referenced_object(T* o = 0) : object(0) {}
+
+    ~referenced_object()
+    {
+      if (object)
+      {
+        ObDereferenceObject(object);
+      }
+    }
+
+    T* release()
+    {
+      T* tmp(object);
+      object = 0;
+
+      return tmp;
+    }
+
+    void clear() { object = 0; }
+
+    T* operator->() { return object; }
+
+    operator T* () { return object; }
+    operator T** () { return &object; }
+  private:
+    T* object;
+  };
+
+  //NTSTATUS read_target_file_for_rename(PFLT_CALLBACK_DATA data);
 }
