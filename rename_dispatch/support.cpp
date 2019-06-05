@@ -24,6 +24,15 @@ namespace
   //}
 }
 
+support::auto_flt_handle::~auto_flt_handle()
+{
+  if (h)
+  {
+    FltClose(h);
+    h = 0;
+  }
+}
+
 //NTSTATUS support::read_target_file_for_rename(PFLT_CALLBACK_DATA data)
 //{
 //  ASSERT(IRP_MJ_SET_INFORMATION == data->Iopb->MajorFunction);

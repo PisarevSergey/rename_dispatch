@@ -180,12 +180,12 @@ namespace support
   };
 
   template <typename T>
-  class referenced_object
+  class auto_referenced_object
   {
   public:
-    referenced_object(T* o = 0) : object(0) {}
+    auto_referenced_object(T* o = 0) : object(0) {}
 
-    ~referenced_object()
+    ~auto_referenced_object()
     {
       if (object)
       {
@@ -209,6 +209,22 @@ namespace support
     operator T** () { return &object; }
   private:
     T* object;
+  };
+
+  class auto_flt_handle
+  {
+  public:
+    auto_flt_handle(HANDLE new_handle = 0) : h(new_handle) {}
+    ~auto_flt_handle();
+
+    void clear()
+    {
+      h = 0;
+    }
+
+    operator PHANDLE() { return &h; }
+  private:
+    HANDLE h;
   };
 
   //NTSTATUS read_target_file_for_rename(PFLT_CALLBACK_DATA data);
