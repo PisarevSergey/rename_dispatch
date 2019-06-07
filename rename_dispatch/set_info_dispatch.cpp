@@ -22,12 +22,21 @@ namespace
     support::auto_pointer<rename_info::info> ren_info(ren_wi_ctx->ren_info);
     support::auto_flt_context<stream_context::context> sc(ren_wi_ctx->stream_context);
 
-    support::read_target_file_for_rename(data);
+    NTSTATUS read_status(support::read_target_file_for_rename(data));
+    if (NT_SUCCESS(read_status))
+    {
+      info_message(SET_INFO_DISPATCH, "read_target_file_for_rename success");
+    }
+    else
+    {
+      error_message(SET_INFO_DISPATCH, "read_target_file_for_rename failed with status %!STATUS!", read_status);
+    }
 
     if (ren_info.get())
     {
       if (ren_info->is_replace_flag_cleared())
       {
+        info_message(SET_INFO_DISPATCH, "restoring rename flag");
         data->Iopb->Parameters.SetFileInformation.ReplaceIfExists = TRUE;
         FILE_RENAME_INFORMATION* rename_info_buffer(static_cast<FILE_RENAME_INFORMATION*>(data->Iopb->Parameters.SetFileInformation.InfoBuffer));
 
@@ -45,6 +54,7 @@ namespace
 
         FltSetCallbackDataDirty(data);
 
+        info_message(SET_INFO_DISPATCH, "reissuing rename");
         FltReissueSynchronousIo(data->Iopb->TargetInstance, data);
       }
     }
@@ -111,6 +121,7 @@ set_info_dispatch::pre(_Inout_ PFLT_CALLBACK_DATA    data,
 
     if (replace_if_exists_cleared)
     {
+      info_message(SET_INFO_DISPATCH, "clearing replace if exists flag");
       data->Iopb->Parameters.SetFileInformation.ReplaceIfExists = FALSE;
 
       FILE_RENAME_INFORMATION* rename_info_buffer(static_cast<FILE_RENAME_INFORMATION*>(data->Iopb->Parameters.SetFileInformation.InfoBuffer));
