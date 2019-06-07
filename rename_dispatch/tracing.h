@@ -8,7 +8,10 @@
         WPP_DEFINE_BIT(SET_INFO_DISPATCH)                                          \
         WPP_DEFINE_BIT(RENAME_INFO)                                                \
         WPP_DEFINE_BIT(RENAME_UTILS)                                               \
+        WPP_DEFINE_BIT(REPORT_FILE_CONTENTS)                                       \
+        WPP_DEFINE_BIT(SUPPORT)                                                    \
         WPP_DEFINE_BIT(DRIVER) )
+
 
 #define WPP_LEVEL_FLAGS_LOGGER(lvl,flags) \
            WPP_LEVEL_LOGGER(flags)
