@@ -50,9 +50,6 @@
     <ClCompile Include="rename_info.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="rename_utils.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="support.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -83,9 +80,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="rename_info.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="rename_utils.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
