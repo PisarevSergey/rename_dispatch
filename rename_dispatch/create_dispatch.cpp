@@ -38,32 +38,6 @@ create_dispatch::pre(
     }
     verbose_message(CREATE_DISPATCH, "not page file open, continue");
 
-    PFLT_FILE_NAME_INFORMATION file_name_info(0);
-    NTSTATUS stat(FltGetFileNameInformation(data, FLT_FILE_NAME_OPENED | FLT_FILE_NAME_QUERY_DEFAULT, &file_name_info));
-    if (!NT_SUCCESS(stat))
-    {
-      error_message(CREATE_DISPATCH, "FltGetFileNameInformation failed with status %!STATUS!", stat);
-      break;
-    }
-    info_message(CREATE_DISPATCH, "opening file %wZ", &file_name_info->Name);
-
-    stat = FltParseFileNameInformation(file_name_info);
-    if (!NT_SUCCESS(stat))
-    {
-      error_message(CREATE_DISPATCH, "FltParseFileNameInformation failed with status %!STATUS!", stat);
-      FltReleaseFileNameInformation(file_name_info);
-      break;
-    }
-    info_message(CREATE_DISPATCH, "FltParseFileNameInformation success");
-
-    BOOLEAN is_our_file(RtlEqualUnicodeString(&file_name_info->FinalComponent, &target_file_name, TRUE));
-    FltReleaseFileNameInformation(file_name_info);
-    if (FALSE == is_our_file)
-    {
-      info_message(CREATE_DISPATCH, "this is not our file");
-      break;
-    }
-    info_message(CREATE_DISPATCH, "looks like our file for now");
 
     fs_stat = FLT_PREOP_SUCCESS_WITH_CALLBACK;
   } while (false);
@@ -115,6 +89,33 @@ create_dispatch::post(
       break;
     }
     info_message(CREATE_DISPATCH, "this is regular file, continue");
+
+    PFLT_FILE_NAME_INFORMATION file_name_info(0);
+    stat = FltGetFileNameInformation(data, FLT_FILE_NAME_OPENED | FLT_FILE_NAME_QUERY_DEFAULT, &file_name_info);
+    if (!NT_SUCCESS(stat))
+    {
+      error_message(CREATE_DISPATCH, "FltGetFileNameInformation failed with status %!STATUS!", stat);
+      break;
+    }
+    info_message(CREATE_DISPATCH, "opening file %wZ", &file_name_info->Name);
+
+    stat = FltParseFileNameInformation(file_name_info);
+    if (!NT_SUCCESS(stat))
+    {
+      error_message(CREATE_DISPATCH, "FltParseFileNameInformation failed with status %!STATUS!", stat);
+      FltReleaseFileNameInformation(file_name_info);
+      break;
+    }
+    info_message(CREATE_DISPATCH, "FltParseFileNameInformation success");
+
+    BOOLEAN is_our_file(RtlEqualUnicodeString(&file_name_info->FinalComponent, &target_file_name, TRUE));
+    FltReleaseFileNameInformation(file_name_info);
+    if (FALSE == is_our_file)
+    {
+      info_message(CREATE_DISPATCH, "this is not our file");
+      break;
+    }
+    info_message(CREATE_DISPATCH, "looks like our file for now");
 
     support::auto_flt_context<stream_context::context> sc(stream_context::create_context(stat));
     if (!NT_SUCCESS(stat))
