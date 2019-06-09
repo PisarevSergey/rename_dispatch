@@ -82,12 +82,12 @@ namespace
         &iosb,
         0,
         FILE_ATTRIBUTE_NORMAL,
-        FILE_SHARE_READ | FILE_SHARE_WRITE | FILE_SHARE_DELETE,
+        0,
         FILE_OPEN,
         FILE_NON_DIRECTORY_FILE | FILE_SYNCHRONOUS_IO_NONALERT,
         0,
         0,
-        0);
+        IO_IGNORE_SHARE_ACCESS_CHECK);
       if (!NT_SUCCESS(stat))
       {
         error_message(SUPPORT, "FltCreateFileEx failed with status %!STATUS!", stat);
