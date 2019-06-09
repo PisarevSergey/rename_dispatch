@@ -17,6 +17,13 @@ create_dispatch::pre(
 
   do
   {
+    if (0 == (data->Iopb->Parameters.Create.SecurityContext->DesiredAccess & DELETE))
+    {
+      verbose_message(CREATE_DISPATCH, "file is not being opened with DELETE access, skipping");
+      break;
+    }
+    verbose_message(CREATE_DISPATCH, "file is being opened with DELETE access, continue");
+
     if (FO_VOLUME_OPEN & data->Iopb->TargetFileObject->Flags)
     {
       verbose_message(CREATE_DISPATCH, "skipping volume open");
