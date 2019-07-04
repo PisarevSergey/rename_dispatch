@@ -13,3 +13,5 @@ public:
 
 driver* create_driver(NTSTATUS& stat, PDRIVER_OBJECT);
 driver* get_driver();
+
+NTSTATUS send_message_to_um(void* send_buffer, ULONG send_buffer_length, PLARGE_INTEGER timeout);

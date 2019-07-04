@@ -64,7 +64,6 @@ namespace
       target_file_name.Buffer = ren_info->FileName;
       info_message(SUPPORT, "target file name is %wZ", &target_file_name);
 
-
       OBJECT_ATTRIBUTES oa;
       InitializeObjectAttributes(&oa,
         &target_file_name,

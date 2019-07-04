@@ -205,6 +205,7 @@ namespace support
 
     T* operator->() { return object; }
 
+    operator void* () { return object; }
     operator T* () { return object; }
     operator T** () { return &object; }
   private:

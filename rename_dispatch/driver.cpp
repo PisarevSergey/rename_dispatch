@@ -99,20 +99,122 @@ namespace
     {
       return FltAllocateContext(filter, ContextType, ContextSize, PoolType, ReturnedContext);
     }
-  private:
+  protected:
     PFLT_FILTER filter;
   };
 
-  class top_driver : public fltmgr_filter_driver
+  class driver_with_communication_port : public fltmgr_filter_driver
   {
   public:
-    top_driver(NTSTATUS& stat, PDRIVER_OBJECT drv) : fltmgr_filter_driver(stat, drv)
+    driver_with_communication_port(NTSTATUS& stat, PDRIVER_OBJECT drv) : fltmgr_filter_driver(stat, drv), server_port(0)
+    {
+      do
+      {
+        if (!NT_SUCCESS(stat))
+        {
+          error_message(DRIVER, "fltmgr_filter_driver ctor returned failure status %!STATUS!", stat);
+          break;
+        }
+        info_message(DRIVER, "fltmgr_filter_driver ctor success");
+
+        PSECURITY_DESCRIPTOR sd(0);
+        stat = FltBuildDefaultSecurityDescriptor(&sd, FLT_PORT_ALL_ACCESS);
+        if (!NT_SUCCESS(stat))
+        {
+          error_message(DRIVER, "FltBuildDefaultSecurityDescriptor failed with status %!STATUS!", stat);
+          break;
+        }
+        info_message(DRIVER, "FltBuildDefaultSecurityDescriptor success");
+
+        UNICODE_STRING com_port_name = RTL_CONSTANT_STRING(um_km_communication::communication_port_name);
+
+        OBJECT_ATTRIBUTES oa;
+        InitializeObjectAttributes(&oa,
+                                   &com_port_name,
+                                   OBJ_KERNEL_HANDLE | OBJ_CASE_INSENSITIVE,
+                                   0,
+                                   sd);
+        stat = FltCreateCommunicationPort(filter,
+                                          &server_port,
+                                          &oa,
+                                          0,
+                                          connect_client_port_notify,
+                                          disconnect_client_port_notify,
+                                          0,
+                                          1);
+        FltFreeSecurityDescriptor(sd);
+        if (!NT_SUCCESS(stat))
+        {
+          error_message(DRIVER, "FltCreateCommunicationPort failed with status %!STATUS!", stat);
+          server_port = 0;
+          break;
+        }
+        info_message(DRIVER, "FltCreateCommunicationPort success");
+
+      } while (false);
+
+    }
+
+    ~driver_with_communication_port()
+    {
+      verbose_message(DRIVER, "entering communication port dtor");
+      if (server_port)
+      {
+        info_message(DRIVER, "closing communication port");
+        FltCloseCommunicationPort(server_port);
+      }
+    }
+
+    static NTSTATUS connect_client_port_notify(
+        PFLT_PORT ClientPort,
+        PVOID,
+        PVOID,
+        ULONG,
+        PVOID*)
+    {
+      info_message(DRIVER, "client port connect");
+      client_port = ClientPort;
+      return STATUS_SUCCESS;
+    }
+
+
+    static void disconnect_client_port_notify(PVOID)
+    {
+      info_message(DRIVER, "closing client port");
+      FltCloseClientPort(get_driver()->get_filter(), &client_port);
+    }
+
+
+  private:
+    PFLT_PORT server_port;
+  public:
+    static PFLT_PORT client_port;
+  };
+
+  PFLT_PORT driver_with_communication_port::client_port = 0;
+
+  class top_driver : public driver_with_communication_port
+  {
+  public:
+    top_driver(NTSTATUS& stat, PDRIVER_OBJECT drv) : driver_with_communication_port(stat, drv)
     {}
 
     void* __cdecl operator new(size_t, void* p) { return p; }
   };
 
   char driver_memory[sizeof(top_driver)];
+}
+
+NTSTATUS send_message_to_um(void* send_buffer, ULONG send_buffer_length, PLARGE_INTEGER timeout)
+{
+  ULONG reply_buffer_length(0);
+  return FltSendMessage(get_driver()->get_filter(),
+                        &driver_with_communication_port::client_port,
+                        send_buffer,
+                        send_buffer_length,
+                        0,
+                        &reply_buffer_length,
+                        timeout);
 }
 
 driver* create_driver(NTSTATUS& stat, PDRIVER_OBJECT drv)

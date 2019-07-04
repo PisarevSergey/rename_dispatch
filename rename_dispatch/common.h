@@ -2,6 +2,8 @@
 
 #include <fltKernel.h>
 
+#include "..\common_includes\um_km_communication.h"
+
 #include "tracing.h"
 
 #include "driver.h"
