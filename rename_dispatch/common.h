@@ -13,3 +13,4 @@
 #include "stream_context.h"
 #include "set_info_dispatch.h"
 #include "support.h"
+#include "rename_reporting.h"

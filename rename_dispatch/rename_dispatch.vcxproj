@@ -142,6 +142,7 @@
     <ClCompile Include="main.cpp" />
     <ClCompile Include="operations.cpp" />
     <ClCompile Include="rename_info.cpp" />
+    <ClCompile Include="rename_reporting.cpp" />
     <ClCompile Include="set_info_dispatch.cpp" />
     <ClCompile Include="stream_context.cpp" />
     <ClCompile Include="support.cpp" />
@@ -152,6 +153,7 @@
     <ClInclude Include="driver.h" />
     <ClInclude Include="operations.h" />
     <ClInclude Include="rename_info.h" />
+    <ClInclude Include="rename_reporting.h" />
     <ClInclude Include="set_info_dispatch.h" />
     <ClInclude Include="stream_context.h" />
     <ClInclude Include="support.h" />

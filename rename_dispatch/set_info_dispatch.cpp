@@ -176,12 +176,7 @@ set_info_dispatch::post(_Inout_  PFLT_CALLBACK_DATA       data,
 
       if (NT_SUCCESS(data->IoStatus.Status))
       {
-        UNICODE_STRING* rename_target_name(0);
-        NTSTATUS stat = support::query_target_file_for_rename_name(data, rename_target_name);
-        if (NT_SUCCESS(stat))
-        {
-          ExFreePool(rename_target_name);
-        }
+        rename_reporting::report_operation_to_um(data);
       }
 
       break;
@@ -196,12 +191,7 @@ set_info_dispatch::post(_Inout_  PFLT_CALLBACK_DATA       data,
 
     post_rename_dispatch(data, &work_item_ctx);
 
-    UNICODE_STRING* rename_target_name(0);
-    NTSTATUS stat = support::query_target_file_for_rename_name(data, rename_target_name);
-    if (NT_SUCCESS(stat))
-    {
-      ExFreePool(rename_target_name);
-    }
+    rename_reporting::report_operation_to_um(data);
 
     fs_stat = FLT_POSTOP_FINISHED_PROCESSING;
 
