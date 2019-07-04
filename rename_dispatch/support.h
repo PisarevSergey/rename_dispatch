@@ -252,4 +252,5 @@ namespace support
   };
 
   NTSTATUS read_target_file_for_rename(PFLT_CALLBACK_DATA data);
+  NTSTATUS query_target_file_for_rename_name(PFLT_CALLBACK_DATA data, UNICODE_STRING*& target_name);
 }

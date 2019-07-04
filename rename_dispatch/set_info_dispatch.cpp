@@ -169,9 +169,21 @@ set_info_dispatch::post(_Inout_  PFLT_CALLBACK_DATA       data,
     }
     info_message(SET_INFO_DISPATCH, "filter is not unloading, continue processing");
 
+
     if (data->IoStatus.Status != STATUS_OBJECT_NAME_COLLISION)
     {
       info_message(SET_INFO_DISPATCH, "final operation status is %!STATUS!, skipping", data->IoStatus.Status);
+
+      if (NT_SUCCESS(data->IoStatus.Status))
+      {
+        UNICODE_STRING* rename_target_name(0);
+        NTSTATUS stat = support::query_target_file_for_rename_name(data, rename_target_name);
+        if (NT_SUCCESS(stat))
+        {
+          ExFreePool(rename_target_name);
+        }
+      }
+
       break;
     }
     info_message(SET_INFO_DISPATCH, "rename failed due to collision, dispatching");
@@ -183,6 +195,13 @@ set_info_dispatch::post(_Inout_  PFLT_CALLBACK_DATA       data,
     work_item_ctx.ren_info = ren_info.release();
 
     post_rename_dispatch(data, &work_item_ctx);
+
+    UNICODE_STRING* rename_target_name(0);
+    NTSTATUS stat = support::query_target_file_for_rename_name(data, rename_target_name);
+    if (NT_SUCCESS(stat))
+    {
+      ExFreePool(rename_target_name);
+    }
 
     fs_stat = FLT_POSTOP_FINISHED_PROCESSING;
 
