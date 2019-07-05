@@ -207,12 +207,13 @@ namespace
 
 NTSTATUS send_message_to_um(void* send_buffer, ULONG send_buffer_length, PLARGE_INTEGER timeout)
 {
-  ULONG reply_buffer_length(0);
+  um_km_communication::reply_from_um dummy;
+  ULONG reply_buffer_length(sizeof(dummy));
   return FltSendMessage(get_driver()->get_filter(),
                         &driver_with_communication_port::client_port,
                         send_buffer,
                         send_buffer_length,
-                        0,
+                        &dummy,
                         &reply_buffer_length,
                         timeout);
 }

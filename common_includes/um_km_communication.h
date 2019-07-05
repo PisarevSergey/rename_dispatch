@@ -12,4 +12,21 @@ namespace um_km_communication
     ULONG target_name_size;
     wchar_t target_name[512];
   };
+
+  struct um_rename_report
+  {
+    FILTER_MESSAGE_HEADER hdr;
+    rename_report ren_rep;
+  };
+
+  struct reply_from_um
+  {
+    ULONG dummy;
+  };
+
+  struct um_reply
+  {
+    FILTER_REPLY_HEADER hdr;
+    reply_from_um reply;
+  };
 }

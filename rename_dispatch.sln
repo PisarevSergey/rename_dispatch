@@ -5,6 +5,8 @@ VisualStudioVersion = 16.0.28922.388
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "rename_dispatch", "rename_dispatch\rename_dispatch.vcxproj", "{EF5803CA-3B18-4A6B-9E2D-AE9CB953BC2C}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "rename_notifications_dispatcher", "rename_notifications_dispatcher\rename_notifications_dispatcher.vcxproj", "{AC9DD1C8-7657-44EE-A2A2-B4DF7CD3D12A}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -25,6 +27,14 @@ Global
 		{EF5803CA-3B18-4A6B-9E2D-AE9CB953BC2C}.Release|x86.ActiveCfg = Release|Win32
 		{EF5803CA-3B18-4A6B-9E2D-AE9CB953BC2C}.Release|x86.Build.0 = Release|Win32
 		{EF5803CA-3B18-4A6B-9E2D-AE9CB953BC2C}.Release|x86.Deploy.0 = Release|Win32
+		{AC9DD1C8-7657-44EE-A2A2-B4DF7CD3D12A}.Debug|x64.ActiveCfg = Debug|x64
+		{AC9DD1C8-7657-44EE-A2A2-B4DF7CD3D12A}.Debug|x64.Build.0 = Debug|x64
+		{AC9DD1C8-7657-44EE-A2A2-B4DF7CD3D12A}.Debug|x86.ActiveCfg = Debug|Win32
+		{AC9DD1C8-7657-44EE-A2A2-B4DF7CD3D12A}.Debug|x86.Build.0 = Debug|Win32
+		{AC9DD1C8-7657-44EE-A2A2-B4DF7CD3D12A}.Release|x64.ActiveCfg = Release|x64
+		{AC9DD1C8-7657-44EE-A2A2-B4DF7CD3D12A}.Release|x64.Build.0 = Release|x64
+		{AC9DD1C8-7657-44EE-A2A2-B4DF7CD3D12A}.Release|x86.ActiveCfg = Release|Win32
+		{AC9DD1C8-7657-44EE-A2A2-B4DF7CD3D12A}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

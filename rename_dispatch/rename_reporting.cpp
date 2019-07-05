@@ -61,7 +61,7 @@ void rename_reporting::report_operation_to_um(PFLT_CALLBACK_DATA data)
         RtlCopyMemory(rr.target_name, target_name->Buffer, rr.target_name_size);
 
         LARGE_INTEGER timeout;
-        timeout.QuadPart = 10000000000; //10 seconds
+        timeout.QuadPart = -100000000; //10 seconds
 
         stat = send_message_to_um(&rr, sizeof(rr), &timeout);
         info_message(RENAME_REPORTING, "send_message_to_um status %!STATUS!", stat);
