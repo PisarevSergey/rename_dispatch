@@ -21,22 +21,62 @@ namespace
     static const wchar_t abc[] = { 'a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','x','w','z' };
     unsigned int random_number;
     rand_s(&random_number);
-    wchar_t random_letter(random_number % (sizeof(abc) / sizeof(abc[0])));
-    return random_letter;
+    return abc[random_number % (sizeof(abc) / sizeof(abc[0]))];
   }
 
-  void fill_random_string(wchar_t* buffer, size_t buffer_size_in_bytes)
+  void fill_random_null_terminated_string(wchar_t* buffer, size_t buffer_size_in_bytes)
   {
     const size_t buffer_size_in_chars(buffer_size_in_bytes / sizeof(buffer[0]));
 
     for (size_t i(0); i < buffer_size_in_chars; ++i)
     {
-      buffer[i] = gen_random_letter();
+      if ((i + 1) == buffer_size_in_chars)
+      {
+        buffer[i] = 0;
+      }
+      else
+      {
+        buffer[i] = gen_random_letter();
+      }
     }
+  }
+
+  DWORD create_and_fill_file_with_random_data(const wchar_t* file_path)
+  {
+    DWORD error(ERROR_SUCCESS);
+
+    HANDLE file(CreateFileW(file_path, GENERIC_WRITE, 0, 0, CREATE_NEW, FILE_ATTRIBUTE_NORMAL, 0));
+    if (INVALID_HANDLE_VALUE == file)
+    {
+      error = GetLastError();
+      wcout << L"failed to create file " << file_path << L"with error " << error << endl;
+    }
+    else
+    {
+      wcout << L"file " << file_path << L" created successfully" << endl;
+
+      static wchar_t data_buffer_to_write_to_file[800];
+      fill_random_null_terminated_string(data_buffer_to_write_to_file, sizeof(data_buffer_to_write_to_file));
+
+      DWORD written;
+      if (WriteFile(file, data_buffer_to_write_to_file, sizeof(data_buffer_to_write_to_file), &written, 0))
+      {
+        wcout << L"file " << file_path << L" successfully filled with pattern" << endl;
+      }
+      else
+      {
+        error = GetLastError();
+        wcout << L"failed to fill file " << file_path << L"with pattern" << endl;
+      }
+
+      CloseHandle(file);
+    }
+
+    return error;
   }
 }
 
-DWORD wmain(int argc, wchar_t* argv[])
+int wmain(int argc, wchar_t* argv[])
 {
   DWORD error(ERROR_SUCCESS);
 
@@ -56,11 +96,43 @@ DWORD wmain(int argc, wchar_t* argv[])
     }
     wcout << L"directory name is ok" << endl;
 
-    wstring base_dir_name(argv[1]);
+    const wstring base_dir_name(argv[1]);
 
     for (;;)
     {
-      break;
+      Sleep(5000);
+
+      wchar_t src_file_name[10];
+      fill_random_null_terminated_string(src_file_name, sizeof(src_file_name));
+      wcout << L"source file name is " << src_file_name << endl;
+
+      const wstring src_file_path(base_dir_name + src_file_name);
+      wcout << L"source file path is " << src_file_path.c_str() << endl;
+
+      error = create_and_fill_file_with_random_data(src_file_path.c_str());
+      if (ERROR_SUCCESS != error)
+      {
+        wcout << "failed to create and fill file " << src_file_path.c_str() << L" with error " << error << endl;
+        continue;
+      }
+      wcout << L"successfully created and filled file " << src_file_path.c_str() << endl;
+
+      wchar_t target_file_name[10];
+      fill_random_null_terminated_string(target_file_name, sizeof(target_file_name));
+      wcout << L"target file name is " << target_file_name << endl;
+
+      const wstring target_file_path(base_dir_name + target_file_name);
+      wcout << L"target file path is " << target_file_path.c_str() << endl;
+
+      if (MoveFileW(src_file_path.c_str(), target_file_path.c_str()))
+      {
+        wcout << L"rename success" << endl;
+      }
+      else
+      {
+        error = GetLastError();
+        wcout << L"rename failed with error " << error << endl;
+      }
     }
 
   } while (false);

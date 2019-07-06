@@ -56,6 +56,7 @@ int main()
         um_km_communication::um_reply reply;
         reply.hdr.Status = 0;
         reply.hdr.MessageId = um_rr.hdr.MessageId;
+        Sleep(5000);
         res = FilterReplyMessage(port, &reply.hdr, sizeof(reply.hdr) + sizeof(reply.reply));
         if (S_OK == res)
         {
