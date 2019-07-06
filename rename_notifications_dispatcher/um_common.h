@@ -5,6 +5,7 @@
 #include <winternl.h>
 #include <fltUser.h>
 #include <process.h>
+#include <stdlib.h>
 
 #include <iostream>
 

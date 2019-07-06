@@ -160,3 +160,15 @@ DWORD hash::compute_sha1_for_file(HANDLE file, unsigned char* sha_hash, unsigned
 
   return error;
 }
+
+void hash::print_hash(const unsigned char* hash_to_print, const unsigned size_of_hash)
+{
+  for (unsigned i(0); i < size_of_hash; ++i)
+  {
+    char buffer_to_print[5];
+    memset(buffer_to_print, 0x00000000, sizeof(buffer_to_print));
+    _itoa_s(hash_to_print[i], buffer_to_print, sizeof(buffer_to_print), 16);
+    std::cout << buffer_to_print;
+  }
+  std::cout << endl;
+}

@@ -43,8 +43,7 @@ namespace
       if (ERROR_SUCCESS == error)
       {
         wcout << L"hash::compute_sha1_for_file success" << endl;
-        std::string sha_hash_to_print(reinterpret_cast<char*>(sha_hash), sizeof(sha_hash));
-        std::cout << "file hash is " << sha_hash_to_print.c_str() << endl;
+        hash::print_hash(sha_hash, sizeof(sha_hash));
       }
       else
       {
