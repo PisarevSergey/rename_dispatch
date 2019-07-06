@@ -9,6 +9,7 @@ namespace um_km_communication
     HANDLE pid;
     HANDLE tid;
     LUID auth_id;
+    LARGE_INTEGER time;
     ULONG target_name_size;
     wchar_t target_name[512];
   };

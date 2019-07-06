@@ -11,6 +11,8 @@ void rename_reporting::report_operation_to_um(PFLT_CALLBACK_DATA data)
   rr.tid = PsGetThreadId(data->Thread);
   info_message(RENAME_REPORTING, "tid: %p", rr.tid);
 
+  KeQuerySystemTime(&rr.time);
+
   NTSTATUS stat(STATUS_UNSUCCESSFUL);
 
   BOOLEAN copy_on_open;

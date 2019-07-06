@@ -6,6 +6,7 @@
 #include <fltUser.h>
 #include <process.h>
 #include <stdlib.h>
+#include <stdio.h>
 
 #include <iostream>
 
@@ -16,3 +17,6 @@ using std::endl;
 
 #include "worker_thread.h"
 #include "hash.h"
+
+void lock_writes();
+void unlock_writes();
