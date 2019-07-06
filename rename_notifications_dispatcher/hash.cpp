@@ -83,10 +83,12 @@ namespace
       if (TRUE == CryptGetHashParam(hash_handle, HP_HASHVAL, sha_hash, &sha_hash_size, 0))
       {
         error = ERROR_SUCCESS;
+        wcout << L"successfully got hash for file" << endl;
       }
       else
       {
         error = GetLastError();
+        wcout << L"failed to get hash for file with error " << error << endl;
       }
 
       return error;
@@ -103,6 +105,8 @@ DWORD hash::compute_sha1_for_file(HANDLE file, unsigned char* sha_hash, unsigned
   std::auto_ptr<hash_provider> hash_prov(new hash_provider(error));
   if (ERROR_SUCCESS == error)
   {
+    wcout << L"hash provider successfully created" << endl;
+
     unsigned char data_buffer[4096];
     DWORD read_bytes(0);
 
@@ -111,29 +115,47 @@ DWORD hash::compute_sha1_for_file(HANDLE file, unsigned char* sha_hash, unsigned
       if (ReadFile(file, data_buffer, sizeof(data_buffer), &read_bytes, 0))
       {
         error = ERROR_SUCCESS;
+        wcout << L"successfully read " << read_bytes << L" bytes from file" << endl;
       }
       else
       {
         error = GetLastError();
+        wcout << L"failed to read file with error " << error << endl;
         break;
       }
 
       if (0 == read_bytes)
       {
+        wcout << L"read success but 0 bytes, exiting" << endl;
         break;
       }
 
       error = hash_prov->hash_data(data_buffer, read_bytes);
-      if (error != ERROR_SUCCESS)
+      if (error == ERROR_SUCCESS)
       {
+        wcout << L"successfully hashed data" << endl;
+      }
+      else
+      {
+        wcout << L"failed to hash data with error " << error << endl;
         break;
       }
     }
 
     if (ERROR_SUCCESS == error)
     {
+      wcout << L"successfully computed hash for file" << endl;
       error = hash_prov->get_hash(sha_hash, size_of_sha_hash);
+
     }
+    else
+    {
+      wcout << L"failed to compute hash for file with error " << error << endl;
+    }
+  }
+  else
+  {
+    wcout << L"failed to create hash provider with error " << error << endl;
   }
 
   return error;
