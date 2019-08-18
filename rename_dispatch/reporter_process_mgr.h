@@ -9,6 +9,7 @@ namespace reporter_process_mgr
     ~manager();
 
     NTSTATUS set_new_reporter_process(HANDLE pid);
+    void reset_reporter_process();
     referenced_reporter_process::process* get_reporter_ref();
   private:
     FAST_MUTEX guard;

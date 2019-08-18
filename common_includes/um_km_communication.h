@@ -4,6 +4,12 @@ namespace um_km_communication
 {
   const wchar_t communication_port_name[] = L"\\rename_comport_name";
 
+  struct connection_context
+  {
+    unsigned __int64 reporter_pid;
+  };
+  static_assert(sizeof(HANDLE) <= sizeof(connection_context::reporter_pid), "wrong size");
+
   struct rename_report
   {
     HANDLE pid;

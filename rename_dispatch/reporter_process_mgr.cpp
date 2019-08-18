@@ -43,6 +43,19 @@ NTSTATUS reporter_process_mgr::manager::set_new_reporter_process(HANDLE pid)
   return stat;
 }
 
+void reporter_process_mgr::manager::reset_reporter_process()
+{
+  info_message(REPORTER_PROCESS_MGR, "reseting reporter process");
+
+  ExAcquireFastMutex(&guard);
+  auto old_proc(current_reporter);
+  current_reporter = 0;
+  ExReleaseFastMutex(&guard);
+
+  delete old_proc;
+
+}
+
 referenced_reporter_process::process* reporter_process_mgr::manager::get_reporter_ref()
 {
   ExAcquireFastMutex(&guard);

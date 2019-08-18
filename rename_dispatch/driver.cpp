@@ -51,6 +51,11 @@ namespace
       return mgr.set_new_reporter_process(pid);
     }
 
+    void reset_reporter_proc()
+    {
+      mgr.reset_reporter_process();
+    }
+
     referenced_reporter_process::process* get_reporter_proc_ref()
     {
       return mgr.get_reporter_ref();
@@ -184,13 +189,36 @@ namespace
     static NTSTATUS connect_client_port_notify(
         PFLT_PORT ClientPort,
         PVOID,
-        PVOID,
-        ULONG,
+        PVOID connection_ctx,
+        ULONG connection_ctx_size,
         PVOID*)
     {
       info_message(DRIVER, "client port connect");
-      client_port = ClientPort;
-      return STATUS_SUCCESS;
+
+      NTSTATUS stat;
+
+      um_km_communication::connection_context* cc(static_cast<um_km_communication::connection_context*>(connection_ctx));
+      if (connection_ctx_size >= sizeof(*cc))
+      {
+        info_message(DRIVER, "connection context size ok");
+        stat = get_driver()->set_new_reporter_proc(reinterpret_cast<HANDLE>(cc->reporter_pid));
+        if (NT_SUCCESS(stat))
+        {
+          info_message(DRIVER, "set_new_reporter_proc success");
+          client_port = ClientPort;
+        }
+        else
+        {
+          error_message(DRIVER, "set_new_reporter_proc failed with status %!STATUS!", stat);
+        }
+      }
+      else
+      {
+        error_message(DRIVER, "connection context size too small");
+        stat = STATUS_INVALID_PARAMETER;
+      }
+
+      return stat;
     }
 
 
@@ -198,6 +226,7 @@ namespace
     {
       info_message(DRIVER, "closing client port");
       FltCloseClientPort(get_driver()->get_filter(), &client_port);
+      get_driver()->reset_reporter_proc();
     }
 
 
