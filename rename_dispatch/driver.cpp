@@ -43,7 +43,23 @@ namespace
     }
   };
 
-  class fltmgr_filter_driver : public tracing_driver
+  class driver_with_reporter_mgr : public tracing_driver
+  {
+  public:
+    NTSTATUS set_new_reporter_proc(HANDLE pid)
+    {
+      return mgr.set_new_reporter_process(pid);
+    }
+
+    referenced_reporter_process::process* get_reporter_proc_ref()
+    {
+      return mgr.get_reporter_ref();
+    }
+  private:
+    reporter_process_mgr::manager mgr;
+  };
+
+  class fltmgr_filter_driver : public driver_with_reporter_mgr
   {
   public:
     fltmgr_filter_driver(NTSTATUS& stat, PDRIVER_OBJECT drv) : filter(0)
