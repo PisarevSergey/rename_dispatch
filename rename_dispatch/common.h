@@ -15,3 +15,4 @@
 #include "support.h"
 #include "rename_reporting.h"
 #include "referenced_reporter_process.h"
+#include "reporter_process_mgr.h"

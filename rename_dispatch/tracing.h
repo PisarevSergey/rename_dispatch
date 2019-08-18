@@ -11,6 +11,7 @@
         WPP_DEFINE_BIT(SUPPORT)                                                    \
         WPP_DEFINE_BIT(RENAME_REPORTING)                                           \
         WPP_DEFINE_BIT(REFERENCED_REPORTER_PROCESS)                                \
+        WPP_DEFINE_BIT(REPORTER_PROCESS_MGR)                                       \
         WPP_DEFINE_BIT(DRIVER) )
 
 
