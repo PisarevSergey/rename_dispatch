@@ -22,22 +22,21 @@ NTSTATUS reporter_process_mgr::manager::set_new_reporter_process(HANDLE pid)
 {
   NTSTATUS stat(STATUS_UNSUCCESSFUL);
 
-  auto tmp_proc(referenced_reporter_process::create_process(stat, pid));
+  auto new_proc(referenced_reporter_process::create_process(stat, pid));
+
+  ExAcquireFastMutex(&guard);
+  auto old_proc(current_reporter);
+  current_reporter = new_proc;
+  ExReleaseFastMutex(&guard);
+  delete old_proc;
+
   if (NT_SUCCESS(stat))
   {
     info_message(REPORTER_PROCESS_MGR, "create_process success");
-
-    ExAcquireFastMutex(&guard);
-    auto old_proc(current_reporter);
-    current_reporter = tmp_proc;
-    ExReleaseFastMutex(&guard);
-
-    delete old_proc;
   }
   else
   {
     error_message(REPORTER_PROCESS_MGR, "create_process failed with status %!STATUS!", stat);
-    delete tmp_proc;
   }
 
   return stat;
