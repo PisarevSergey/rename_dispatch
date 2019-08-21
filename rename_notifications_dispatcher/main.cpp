@@ -29,11 +29,14 @@ void unlock_writes() { wl.unlock(); }
 
 int main()
 {
+  um_km_communication::connection_context cc = {0};
+  cc.reporter_pid = GetCurrentProcessId();
+
   HANDLE port;
   HRESULT res = FilterConnectCommunicationPort(um_km_communication::communication_port_name,
                                                0,
-                                               0,
-                                               0,
+                                               &cc,
+                                               sizeof(cc),
                                                0,
                                                &port);
   if (S_OK == res)
