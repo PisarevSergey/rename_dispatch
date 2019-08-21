@@ -5,6 +5,7 @@
         WPP_DEFINE_BIT(MAIN)                                                       \
         WPP_DEFINE_BIT(CREATE_DISPATCH)                                            \
         WPP_DEFINE_BIT(STREAM_CONTEXT)                                             \
+        WPP_DEFINE_BIT(SECTION_CONTEXT)                                            \
         WPP_DEFINE_BIT(SET_INFO_DISPATCH)                                          \
         WPP_DEFINE_BIT(RENAME_INFO)                                                \
         WPP_DEFINE_BIT(REPORT_FILE_CONTENTS)                                       \

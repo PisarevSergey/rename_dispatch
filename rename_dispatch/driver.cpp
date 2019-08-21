@@ -84,9 +84,10 @@ namespace
       freg.FilterUnloadCallback = unload;
       freg.InstanceSetupCallback = attach;
 
-      FLT_CONTEXT_REGISTRATION context_reg[] =
+      const FLT_CONTEXT_REGISTRATION context_reg[] =
       {
-        {FLT_STREAM_CONTEXT, 0, stream_context::cleanup, stream_context::get_size(), 'crtS'},
+        {FLT_STREAM_CONTEXT , 0, stream_context::cleanup,  stream_context::get_size(), 'crtS'},
+        {FLT_SECTION_CONTEXT, 0,                       0, section_context::get_size(), 'tceS'},
         {FLT_CONTEXT_END}
       };
 

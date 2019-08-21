@@ -16,4 +16,4 @@
 #include "set_info_dispatch.h"
 #include "support.h"
 #include "rename_reporting.h"
-
+#include "section_context.h"
