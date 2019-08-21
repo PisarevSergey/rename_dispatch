@@ -11,7 +11,7 @@ namespace
   }
 
   NTSTATUS
-    attach(_In_ PCFLT_RELATED_OBJECTS,
+    attach(_In_ PCFLT_RELATED_OBJECTS objs,
            _In_ FLT_INSTANCE_SETUP_FLAGS,
            _In_ DEVICE_TYPE VolumeDeviceType,
            _In_ FLT_FILESYSTEM_TYPE)
@@ -21,7 +21,16 @@ namespace
     if ((FILE_DEVICE_DISK_FILE_SYSTEM    == VolumeDeviceType) ||
         (FILE_DEVICE_NETWORK_FILE_SYSTEM == VolumeDeviceType))
     {
-      stat = STATUS_SUCCESS;
+      const NTSTATUS register_for_data_scan_stat(FltRegisterForDataScan(objs->Instance));
+      if (NT_SUCCESS(register_for_data_scan_stat))
+      {
+        stat = STATUS_SUCCESS;
+        info_message(DRIVER, "FltRegisterForDataScan success");
+      }
+      else
+      {
+        error_message(DRIVER, "FltRegisterForDataScan failed with status %!STATUS!", register_for_data_scan_stat);
+      }
     }
 
     return stat;
