@@ -16,6 +16,8 @@ namespace um_km_communication
     HANDLE tid;
     LUID auth_id;
     LARGE_INTEGER time;
+    HANDLE section_handle;
+    LARGE_INTEGER size_of_mapped_file;
     ULONG target_name_size;
     wchar_t target_name[512];
   };
