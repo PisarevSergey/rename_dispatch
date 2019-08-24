@@ -144,12 +144,12 @@
   <ItemGroup>
     <ClCompile Include="hash.cpp" />
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="worker_thread.cpp" />
+    <ClCompile Include="reporter.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="hash.h" />
     <ClInclude Include="um_common.h" />
-    <ClInclude Include="worker_thread.h" />
+    <ClInclude Include="reporter.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

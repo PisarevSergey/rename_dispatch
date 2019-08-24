@@ -56,18 +56,15 @@ int main()
       {
         wcout << L"FilterGetMessage success" << endl;
 
+        reporter::report_file_rename(&um_rr.ren_rep);
+
         um_km_communication::um_reply reply;
         reply.hdr.Status = 0;
         reply.hdr.MessageId = um_rr.hdr.MessageId;
-        Sleep(5000);
         res = FilterReplyMessage(port, &reply.hdr, sizeof(reply.hdr) + sizeof(reply.reply));
         if (S_OK == res)
         {
           wcout << L"FilterReplyMessage success" << endl;
-
-          um_km_communication::rename_report* report = reinterpret_cast<um_km_communication::rename_report*>(new char[sizeof(*report)]);
-          *report = um_rr.ren_rep;
-          worker_thread::report_file_rename_delayed(report);
         }
         else
         {

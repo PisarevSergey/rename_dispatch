@@ -15,7 +15,7 @@ using std::endl;
 
 #include "..\common_includes\um_km_communication.h"
 
-#include "worker_thread.h"
+#include "reporter.h"
 #include "hash.h"
 
 void lock_writes();
