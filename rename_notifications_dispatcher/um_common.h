@@ -17,6 +17,7 @@ using std::endl;
 
 #include "reporter.h"
 #include "hash.h"
+#include "driver_communication_thread.h"
 
 void lock_writes();
 void unlock_writes();

@@ -24,6 +24,8 @@ namespace
   writer_locker wl;
 }
 
+HANDLE communication_port_handle;
+
 void lock_writes() { wl.lock(); }
 void unlock_writes() { wl.unlock(); }
 
@@ -32,54 +34,41 @@ int main()
   um_km_communication::connection_context cc = {0};
   cc.reporter_pid = GetCurrentProcessId();
 
-  HANDLE port;
   HRESULT res = FilterConnectCommunicationPort(um_km_communication::communication_port_name,
                                                0,
                                                &cc,
                                                sizeof(cc),
                                                0,
-                                               &port);
+                                               &communication_port_handle);
   if (S_OK == res)
   {
     wcout << L"FilterConnectCommunicationPort success" << endl;
 
-    for (;;)
+    const unsigned number_of_worker_threads_to_create(3);
+    HANDLE worker_threads[number_of_worker_threads_to_create] = {0};
+    unsigned actual_number_of_worker_threads(0);
+
+    while (actual_number_of_worker_threads < number_of_worker_threads_to_create)
     {
-      um_km_communication::um_rename_report um_rr = {0};
-      res = FilterGetMessage(port,
-        &um_rr.hdr,
-        sizeof(um_rr.hdr) + sizeof(um_rr.ren_rep),
-        0);
-
-      lock_writes();
-      if (S_OK == res)
+      worker_threads[actual_number_of_worker_threads] = reinterpret_cast<HANDLE>(_beginthreadex(0, 0, driver_communication_thread::worker, 0, 0, 0));
+      if (worker_threads[actual_number_of_worker_threads])
       {
-        wcout << L"FilterGetMessage success" << endl;
-
-        reporter::report_file_rename(&um_rr.ren_rep);
-
-        um_km_communication::um_reply reply;
-        reply.hdr.Status = 0;
-        reply.hdr.MessageId = um_rr.hdr.MessageId;
-        res = FilterReplyMessage(port, &reply.hdr, sizeof(reply.hdr) + sizeof(reply.reply));
-        if (S_OK == res)
-        {
-          wcout << L"FilterReplyMessage success" << endl;
-        }
-        else
-        {
-          wcout << L"FilterReplyMessage failed with result " << res << endl;
-        }
+        wcout << L"thread number " << actual_number_of_worker_threads << L" created successfully" << endl;
+        ++actual_number_of_worker_threads;
       }
       else
       {
-        wcout << L"FilterGetMessage failed with result " << res << endl;
+        wcout << L"failed to start worker thread number "<< actual_number_of_worker_threads << endl;
+        break;
       }
-
-      unlock_writes();
     }
 
-    CloseHandle(port);
+    if (actual_number_of_worker_threads)
+    {
+      WaitForMultipleObjects(actual_number_of_worker_threads, worker_threads, TRUE, INFINITE);
+    }
+
+    CloseHandle(communication_port_handle);
   }
   else
   {

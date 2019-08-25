@@ -142,11 +142,13 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="driver_communication_thread.cpp" />
     <ClCompile Include="hash.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="reporter.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="driver_communication_thread.h" />
     <ClInclude Include="hash.h" />
     <ClInclude Include="um_common.h" />
     <ClInclude Include="reporter.h" />

@@ -11,8 +11,6 @@ namespace
 
 void reporter::report_file_rename(um_km_communication::rename_report* report)
 {
-  lock_writes();
-
   wcout << L"pid: " << report->pid << endl;
   wcout << L"tid: " << report->tid << endl;
 
@@ -44,6 +42,4 @@ void reporter::report_file_rename(um_km_communication::rename_report* report)
   {
     wcout << L"hash::compute_sha1_for_file failed with error " << error << endl;
   }
-
-  unlock_writes();
 }

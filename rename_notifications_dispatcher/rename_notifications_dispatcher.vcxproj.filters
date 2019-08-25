@@ -24,6 +24,9 @@
     <ClCompile Include="reporter.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="driver_communication_thread.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="um_common.h">
@@ -33,6 +36,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="reporter.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="driver_communication_thread.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
