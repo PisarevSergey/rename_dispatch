@@ -2,6 +2,24 @@
 
 namespace
 {
+  class system_info
+  {
+  public:
+    system_info()
+    {
+      GetSystemInfo(&sys_info);
+    }
+
+    const SYSTEM_INFO* operator->() const
+    {
+      return &sys_info;
+    }
+  private:
+    SYSTEM_INFO sys_info;
+  };
+
+  const system_info si;
+
   class crypto_context
   {
   public:
@@ -98,7 +116,7 @@ namespace
   };
 }
 
-DWORD hash::compute_sha1_for_file(HANDLE file, unsigned char* sha_hash, unsigned size_of_sha_hash)
+DWORD hash::compute_sha1_for_section(HANDLE section, const LARGE_INTEGER& file_size, unsigned char* sha_hash, unsigned size_of_sha_hash)
 {
   DWORD error = ERROR_SUCCESS;
  
@@ -107,30 +125,28 @@ DWORD hash::compute_sha1_for_file(HANDLE file, unsigned char* sha_hash, unsigned
   {
     wcout << L"hash provider successfully created" << endl;
 
-    unsigned char data_buffer[4096];
-    DWORD read_bytes(0);
+    LARGE_INTEGER remain_to_read;
+    remain_to_read.QuadPart = file_size.QuadPart;
 
-    for(;;)
+    for(LARGE_INTEGER offset = { 0 }; offset.QuadPart < file_size.QuadPart;)
     {
-      if (ReadFile(file, data_buffer, sizeof(data_buffer), &read_bytes, 0))
+      const DWORD buffer_size(static_cast<DWORD>((si->dwAllocationGranularity < remain_to_read.QuadPart) ? si->dwAllocationGranularity : remain_to_read.QuadPart));
+      remain_to_read.QuadPart -= buffer_size;
+      void* data_buffer = MapViewOfFile(section, FILE_MAP_READ, offset.HighPart, offset.LowPart, buffer_size);
+      offset.QuadPart += buffer_size;
+      if (data_buffer)
       {
         error = ERROR_SUCCESS;
-        wcout << L"successfully read " << read_bytes << L" bytes from file" << endl;
+        wcout << L"successfully mapped " << buffer_size << L" bytes for section" << endl;
       }
       else
       {
         error = GetLastError();
-        wcout << L"failed to read file with error " << error << endl;
+        wcout << L"failed to map view with error " << error << endl;
         break;
       }
 
-      if (0 == read_bytes)
-      {
-        wcout << L"read success but 0 bytes, exiting" << endl;
-        break;
-      }
-
-      error = hash_prov->hash_data(data_buffer, read_bytes);
+      error = hash_prov->hash_data(static_cast<unsigned char*>(data_buffer), buffer_size);
       if (error == ERROR_SUCCESS)
       {
         wcout << L"successfully hashed data" << endl;
@@ -146,7 +162,6 @@ DWORD hash::compute_sha1_for_file(HANDLE file, unsigned char* sha_hash, unsigned
     {
       wcout << L"successfully computed hash for file" << endl;
       error = hash_prov->get_hash(sha_hash, size_of_sha_hash);
-
     }
     else
     {
