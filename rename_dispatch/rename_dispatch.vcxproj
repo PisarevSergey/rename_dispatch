@@ -141,6 +141,7 @@
     <ClCompile Include="driver.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="operations.cpp" />
+    <ClCompile Include="prev_mode_switcher.cpp" />
     <ClCompile Include="referenced_reporter_process.cpp" />
     <ClCompile Include="rename_info.cpp" />
     <ClCompile Include="reporter.cpp" />
@@ -157,6 +158,7 @@
     <ClInclude Include="create_dispatch.h" />
     <ClInclude Include="driver.h" />
     <ClInclude Include="operations.h" />
+    <ClInclude Include="prev_mode_switcher.h" />
     <ClInclude Include="referenced_reporter_process.h" />
     <ClInclude Include="rename_info.h" />
     <ClInclude Include="reporter.h" />

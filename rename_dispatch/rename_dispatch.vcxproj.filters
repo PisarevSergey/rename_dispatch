@@ -71,6 +71,9 @@
     <ClCompile Include="reporter.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="prev_mode_switcher.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="common.h">
@@ -116,6 +119,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="reporter.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="prev_mode_switcher.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

@@ -15,6 +15,7 @@
         WPP_DEFINE_BIT(UM_REPORTS_LIST)                                            \
         WPP_DEFINE_BIT(UM_REPORT_CLASS)                                            \
         WPP_DEFINE_BIT(REPORTER)                                                   \
+        WPP_DEFINE_BIT(PREV_MODE_SWITCHER)                                         \
         WPP_DEFINE_BIT(DRIVER) )
 
 

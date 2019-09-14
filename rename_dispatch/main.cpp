@@ -10,6 +10,12 @@ extern "C" NTSTATUS DriverEntry(PDRIVER_OBJECT drv, PUNICODE_STRING)
 
   do
   {
+    stat = prev_mode_switcher::init_switcher();
+    if (!NT_SUCCESS(stat))
+    {
+      break;
+    }
+
     d = create_driver(stat, drv);
     if (!NT_SUCCESS(stat))
     {

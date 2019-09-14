@@ -238,7 +238,11 @@ um_report_class::report::~report()
     {
       KAPC_STATE state;
       KeStackAttachProcess(reporter->get_eproc(), &state);
+
+      KPROCESSOR_MODE old_mode = prev_mode_switcher::set_prev_mode(UserMode);
       NtClose(um_rename_report.section_handle);
+      prev_mode_switcher::set_prev_mode(old_mode);
+
       KeUnstackDetachProcess(&state);
     }
 
