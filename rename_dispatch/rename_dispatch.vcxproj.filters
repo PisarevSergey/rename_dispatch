@@ -53,9 +53,6 @@
     <ClCompile Include="support.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="rename_reporting.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="referenced_reporter_process.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -63,6 +60,15 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="section_context.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="um_reports_list.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="um_report_class.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="reporter.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -94,9 +100,6 @@
     <ClInclude Include="rename_info.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="rename_reporting.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="referenced_reporter_process.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -104,6 +107,15 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="section_context.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="um_reports_list.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="um_report_class.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="reporter.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

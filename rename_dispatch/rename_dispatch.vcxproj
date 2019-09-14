@@ -143,12 +143,14 @@
     <ClCompile Include="operations.cpp" />
     <ClCompile Include="referenced_reporter_process.cpp" />
     <ClCompile Include="rename_info.cpp" />
-    <ClCompile Include="rename_reporting.cpp" />
+    <ClCompile Include="reporter.cpp" />
     <ClCompile Include="reporter_process_mgr.cpp" />
     <ClCompile Include="section_context.cpp" />
     <ClCompile Include="set_info_dispatch.cpp" />
     <ClCompile Include="stream_context.cpp" />
     <ClCompile Include="support.cpp" />
+    <ClCompile Include="um_reports_list.cpp" />
+    <ClCompile Include="um_report_class.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="common.h" />
@@ -157,13 +159,15 @@
     <ClInclude Include="operations.h" />
     <ClInclude Include="referenced_reporter_process.h" />
     <ClInclude Include="rename_info.h" />
-    <ClInclude Include="rename_reporting.h" />
+    <ClInclude Include="reporter.h" />
     <ClInclude Include="reporter_process_mgr.h" />
     <ClInclude Include="section_context.h" />
     <ClInclude Include="set_info_dispatch.h" />
     <ClInclude Include="stream_context.h" />
     <ClInclude Include="support.h" />
     <ClInclude Include="tracing.h" />
+    <ClInclude Include="um_reports_list.h" />
+    <ClInclude Include="um_report_class.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -176,7 +176,16 @@ set_info_dispatch::post(_Inout_  PFLT_CALLBACK_DATA       data,
 
       if (NT_SUCCESS(data->IoStatus.Status))
       {
-        rename_reporting::report_operation_to_um(data);
+        NTSTATUS stat(STATUS_INSUFFICIENT_RESOURCES);
+        auto report_for_um = new um_report_class::report(stat, data);
+        if (NT_SUCCESS(stat))
+        {
+          get_driver()->get_reporter()->push_report(report_for_um);
+        }
+        else
+        {
+          delete report_for_um;
+        }
       }
 
       break;
@@ -191,7 +200,16 @@ set_info_dispatch::post(_Inout_  PFLT_CALLBACK_DATA       data,
 
     post_rename_dispatch(data, &work_item_ctx);
 
-    rename_reporting::report_operation_to_um(data);
+    NTSTATUS stat(STATUS_INSUFFICIENT_RESOURCES);
+    auto report_for_um = new um_report_class::report(stat, data);
+    if (NT_SUCCESS(stat))
+    {
+      get_driver()->get_reporter()->push_report(report_for_um);
+    }
+    else
+    {
+      delete report_for_um;
+    }
 
     fs_stat = FLT_POSTOP_FINISHED_PROCESSING;
 

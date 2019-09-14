@@ -10,9 +10,11 @@
         WPP_DEFINE_BIT(RENAME_INFO)                                                \
         WPP_DEFINE_BIT(REPORT_FILE_CONTENTS)                                       \
         WPP_DEFINE_BIT(SUPPORT)                                                    \
-        WPP_DEFINE_BIT(RENAME_REPORTING)                                           \
         WPP_DEFINE_BIT(REFERENCED_REPORTER_PROCESS)                                \
         WPP_DEFINE_BIT(REPORTER_PROCESS_MGR)                                       \
+        WPP_DEFINE_BIT(UM_REPORTS_LIST)                                            \
+        WPP_DEFINE_BIT(UM_REPORT_CLASS)                                            \
+        WPP_DEFINE_BIT(REPORTER)                                                   \
         WPP_DEFINE_BIT(DRIVER) )
 
 

@@ -315,3 +315,10 @@ NTSTATUS support::query_target_file_for_rename_name(PFLT_CALLBACK_DATA data, UNI
 
   return stat;
 }
+
+LARGE_INTEGER support::seconds_to_100_nanosec_units(LONG number_of_seconds)
+{
+  LARGE_INTEGER time;
+  time.QuadPart = number_of_seconds * 10000000;
+  return time;
+}

@@ -73,10 +73,31 @@ namespace
     reporter_process_mgr::manager mgr;
   };
 
-  class fltmgr_filter_driver : public driver_with_reporter_mgr
+  class driver_with_reporter : public driver_with_reporter_mgr
   {
   public:
-    fltmgr_filter_driver(NTSTATUS& stat, PDRIVER_OBJECT drv) : filter(0)
+    driver_with_reporter(NTSTATUS& stat) : r(nullptr)
+    {
+      r = reporter_facility::create_reporter(stat);
+    }
+
+    ~driver_with_reporter()
+    {
+      delete r;
+    }
+
+    reporter_facility::reporter* get_reporter()
+    {
+      return r;
+    }
+  private:
+    reporter_facility::reporter* r;
+  };
+
+  class fltmgr_filter_driver : public driver_with_reporter
+  {
+  public:
+    fltmgr_filter_driver(NTSTATUS& stat, PDRIVER_OBJECT drv) : driver_with_reporter(stat), filter(0)
     {
       FLT_REGISTRATION freg = { 0 };
       freg.Size = sizeof(freg);
@@ -171,7 +192,7 @@ namespace
                                           0,
                                           connect_client_port_notify,
                                           disconnect_client_port_notify,
-                                          0,
+                                          message_notify,
                                           1);
         FltFreeSecurityDescriptor(sd);
         if (!NT_SUCCESS(stat))
@@ -239,6 +260,39 @@ namespace
       get_driver()->reset_reporter_proc();
     }
 
+    static NTSTATUS message_notify(PVOID /*PortCookie*/,
+                                   PVOID InputBuffer OPTIONAL,
+                                   ULONG InputBufferLength,
+                                   PVOID /*OutputBuffer */,
+                                   ULONG /*OutputBufferLength*/,
+                                   PULONG ReturnOutputBufferLength)
+    {
+      NTSTATUS stat(STATUS_UNSUCCESSFUL);
+
+      *ReturnOutputBufferLength = 0;
+
+      um_km_communication::release_report_message release_msg = { 0 };
+      __try
+      {
+        if (InputBufferLength >= sizeof(release_msg))
+        {
+          RtlCopyMemory(&release_msg, InputBuffer, sizeof(release_msg));
+          stat = STATUS_SUCCESS;
+        }
+      }
+      __except (EXCEPTION_EXECUTE_HANDLER)
+      {
+        stat = GetExceptionCode();
+      }
+
+      if (NT_SUCCESS(stat))
+      {
+        auto rep = get_driver()->get_reporter()->get_list_waiting_for_cleaning()->pop_report_by_number(release_msg.report_number_to_release);
+        delete rep;
+      }
+
+      return stat;
+    }
 
   private:
     PFLT_PORT server_port;
@@ -262,14 +316,12 @@ namespace
 
 NTSTATUS send_message_to_um(void* send_buffer, ULONG send_buffer_length, PLARGE_INTEGER timeout)
 {
-  um_km_communication::reply_from_um dummy;
-  ULONG reply_buffer_length(sizeof(dummy));
   return FltSendMessage(get_driver()->get_filter(),
                         &driver_with_communication_port::client_port,
                         send_buffer,
                         send_buffer_length,
-                        &dummy,
-                        &reply_buffer_length,
+                        0,
+                        0,
                         timeout);
 }
 

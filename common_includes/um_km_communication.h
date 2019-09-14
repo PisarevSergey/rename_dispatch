@@ -10,8 +10,9 @@ namespace um_km_communication
   };
   static_assert(sizeof(HANDLE) <= sizeof(connection_context::reporter_pid), "wrong size");
 
-  struct rename_report
+  struct rename_report //for FltSendMessage
   {
+    LONG64 report_number;
     HANDLE pid;
     HANDLE tid;
     LUID auth_id;
@@ -22,20 +23,14 @@ namespace um_km_communication
     wchar_t target_name[512];
   };
 
-  struct um_rename_report
+  struct um_rename_report // for FilterGetMessage
   {
     FILTER_MESSAGE_HEADER hdr;
     rename_report ren_rep;
   };
 
-  struct reply_from_um
+  struct release_report_message //for FilterSendMessage and MessageNotifyCallback
   {
-    ULONG dummy;
-  };
-
-  struct um_reply
-  {
-    FILTER_REPLY_HEADER hdr;
-    reply_from_um reply;
+    LONG64 report_number_to_release;
   };
 }

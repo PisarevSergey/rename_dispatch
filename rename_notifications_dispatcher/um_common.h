@@ -21,3 +21,6 @@ using std::endl;
 
 void lock_writes();
 void unlock_writes();
+
+const DWORD number_of_worker_threads(3);
+static_assert(number_of_worker_threads <= MAXIMUM_WAIT_OBJECTS, "too many worker threads");
