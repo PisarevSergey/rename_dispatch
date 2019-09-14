@@ -79,6 +79,14 @@ namespace
     driver_with_reporter(NTSTATUS& stat) : r(nullptr)
     {
       r = reporter_facility::create_reporter(stat);
+      if (NT_SUCCESS(stat))
+      {
+        info_message(DRIVER, "reporter_facility::create_reporter success");
+      }
+      else
+      {
+        error_message(DRIVER, "reporter_facility::create_reporter failed with status %!STATUS!", stat);
+      }
     }
 
     ~driver_with_reporter()
@@ -287,8 +295,12 @@ namespace
 
       if (NT_SUCCESS(stat))
       {
-        auto rep = get_driver()->get_reporter()->get_list_waiting_for_cleaning()->pop_report_by_number(release_msg.report_number_to_release);
-        delete rep;
+        info_message(DRIVER, "user mode parameters validation success");
+        delete get_driver()->get_reporter()->get_list_waiting_for_cleaning()->pop_report_by_number(release_msg.report_number_to_release);
+      }
+      else
+      {
+        error_message(DRIVER, "user mode parameters validation failed with status %!STATUS!", stat);
       }
 
       return stat;

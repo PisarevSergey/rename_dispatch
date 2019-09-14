@@ -144,6 +144,7 @@ namespace
         this);
       if (NT_SUCCESS(stat))
       {
+        info_message(UM_REPORTS_LIST, "PsCreateSystemThread success");
         stat = ObReferenceObjectByHandle(thread_handle,
           SYNCHRONIZE,
           *PsThreadType,
@@ -153,15 +154,23 @@ namespace
         ASSERT(NT_SUCCESS(stat));
         ZwClose(thread_handle);
       }
+      else
+      {
+        error_message(UM_REPORTS_LIST, "PsCreateSystemThread failed with status %!STATUS!", stat);
+      }
     }
 
     ~list_with_cleaner_thread()
     {
       if (thread_object)
       {
+        info_message(UM_REPORTS_LIST, "starting destruction");
+
         stop_thread = true;
         KeWaitForSingleObject(thread_object, Executive, KernelMode, FALSE, 0);
         ObDereferenceObject(thread_object);
+
+        info_message(UM_REPORTS_LIST, "finished destruction");
       }
     }
   private:
@@ -213,8 +222,13 @@ um_reports_list::list* um_reports_list::create_list(NTSTATUS& stat)
 {
   stat = STATUS_INSUFFICIENT_RESOURCES;
   um_reports_list::list* l = new top_list(stat);
-  if (!NT_SUCCESS(stat))
+  if (NT_SUCCESS(stat))
   {
+    info_message(UM_REPORTS_LIST, "new list successfully created");
+  }
+  else
+  {
+    error_message(UM_REPORTS_LIST, "failed to create new list with status %!STATUS!", stat);
     delete l;
     l = 0;
   }

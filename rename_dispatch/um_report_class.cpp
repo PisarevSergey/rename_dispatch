@@ -87,6 +87,14 @@ namespace
       info_message(UM_REPORT_CLASS, "section_context::create_context success");
 
       stat = initialize_section_handle_with_section_creation(section_ctx, data, reporter_proc, rename_report);
+      if (NT_SUCCESS(stat))
+      {
+        info_message(UM_REPORT_CLASS, "initialize_section_handle_with_section_creation success");
+      }
+      else
+      {
+        error_message(UM_REPORT_CLASS, "initialize_section_handle_with_section_creation failed with status %!STATUS!", stat);
+      }
 
       FltReleaseContext(section_ctx);
     }
@@ -159,7 +167,7 @@ namespace
         {
           rep.target_name_size = target_name->Length;
           RtlCopyMemory(rep.target_name, target_name->Buffer, rep.target_name_size);
-
+          info_message(UM_REPORT_CLASS, "name successfully copied to message buffer");
         }
         else
         {

@@ -1,4 +1,5 @@
 #include "common.h"
+#include "reporter.tmh"
 
 namespace
 {
@@ -139,6 +140,7 @@ namespace
           this);
         if (NT_SUCCESS(stat))
         {
+          info_message(REPORTER, "PsCreateSystemThread success");
           stat = ObReferenceObjectByHandle(worker_handle,
             SYNCHRONIZE,
             *PsThreadType,
@@ -148,6 +150,10 @@ namespace
           ASSERT(NT_SUCCESS(stat));
           ZwClose(worker_handle);
         }
+        else
+        {
+          error_message(REPORTER, "PsCreateSystemThread failed with status %!STATUS!", stat);
+        }
       }
     }
 
@@ -155,10 +161,14 @@ namespace
     {
       if (reporter_thread)
       {
+        info_message(REPORTER, "starting destruction");
+
         stop_thread = true;
         KeSetEvent(&stopper, 0, FALSE);
         KeWaitForSingleObject(reporter_thread, Executive, KernelMode, FALSE, 0);
         ObDereferenceObject(reporter_thread);
+
+        info_message(REPORTER, "destruction finished");
       }
     }
   private:
@@ -172,6 +182,7 @@ namespace
     reporter_with_worker* rep = static_cast<reporter_with_worker*>(r);
 
     LARGE_INTEGER timeout = support::seconds_to_100_nanosec_units(-5);
+    NTSTATUS stat;
 
     while (false == rep->stop_thread)
     {
@@ -180,7 +191,16 @@ namespace
       um_report_class::report* current_rep = rep->pop_report();
       if (current_rep)
       {
-        send_message_to_um(&current_rep->um_rename_report, sizeof(current_rep->um_rename_report), &timeout);
+        stat = send_message_to_um(&current_rep->um_rename_report, sizeof(current_rep->um_rename_report), &timeout);
+        if (NT_SUCCESS(stat))
+        {
+          info_message(REPORTER, "send_message_to_um success");
+        }
+        else
+        {
+          error_message(REPORTER, "send_message_to_um failed with status %!STATUS!", stat);
+        }
+
         rep->get_list_waiting_for_cleaning()->push_report(current_rep);
       }
 
@@ -214,8 +234,13 @@ reporter_facility::reporter* reporter_facility::create_reporter(NTSTATUS& stat)
 {
   stat = STATUS_INSUFFICIENT_RESOURCES;
   reporter_facility::reporter* r(new top_reporter(stat));
-  if (!NT_SUCCESS(stat))
+  if (NT_SUCCESS(stat))
   {
+    info_message(REPORTER, "new reporter successfully created");
+  }
+  else
+  {
+    error_message(REPORTER, "failed to create new reporter with status %!STATUS!", stat);
     delete r;
     r = 0;
   }
