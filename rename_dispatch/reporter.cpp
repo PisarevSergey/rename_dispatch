@@ -103,7 +103,7 @@ namespace
   class reporter_with_list_for_cleaning : public reporter_with_alarm
   {
   public:
-    reporter_with_list_for_cleaning(NTSTATUS stat) : list_for_cleaning(nullptr)
+    reporter_with_list_for_cleaning(NTSTATUS& stat) : list_for_cleaning(nullptr)
     {
       list_for_cleaning = um_reports_list::create_list(stat);
     }
