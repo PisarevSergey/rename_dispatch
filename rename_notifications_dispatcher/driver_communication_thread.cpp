@@ -45,6 +45,12 @@ unsigned __stdcall driver_communication_thread::worker(PVOID context)
 
       break;
     }
+    else
+    {
+      lock_writes();
+      wcout << L"GetQueuedCompletionStatus success" << endl;
+      unlock_writes();
+    }
 
     lock_writes();
     wcout << L"GetQueuedCompletionStatus success" << endl;;
