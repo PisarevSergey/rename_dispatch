@@ -147,6 +147,7 @@
     <ClCompile Include="reporter.cpp" />
     <ClCompile Include="reporter_process_mgr.cpp" />
     <ClCompile Include="section_context.cpp" />
+    <ClCompile Include="section_notification_callback.cpp" />
     <ClCompile Include="set_info_dispatch.cpp" />
     <ClCompile Include="stream_context.cpp" />
     <ClCompile Include="support.cpp" />
@@ -164,6 +165,7 @@
     <ClInclude Include="reporter.h" />
     <ClInclude Include="reporter_process_mgr.h" />
     <ClInclude Include="section_context.h" />
+    <ClInclude Include="section_notification_callback.h" />
     <ClInclude Include="set_info_dispatch.h" />
     <ClInclude Include="stream_context.h" />
     <ClInclude Include="support.h" />

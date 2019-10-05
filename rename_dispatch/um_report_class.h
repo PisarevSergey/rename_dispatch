@@ -15,5 +15,6 @@ namespace um_report_class
   public:
     referenced_reporter_process::process* reporter;
     um_km_communication::rename_report um_rename_report;
+    section_context::context* sec_ctx;
   };
 }

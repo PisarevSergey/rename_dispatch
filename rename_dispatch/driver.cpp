@@ -112,11 +112,12 @@ namespace
       freg.Version = FLT_REGISTRATION_VERSION;
       freg.FilterUnloadCallback = unload;
       freg.InstanceSetupCallback = attach;
+      freg.SectionNotificationCallback = section_notification_callback::callback;
 
       const FLT_CONTEXT_REGISTRATION context_reg[] =
       {
-        {FLT_STREAM_CONTEXT , 0, stream_context::cleanup,  stream_context::get_size(), 'crtS'},
-        {FLT_SECTION_CONTEXT, 0,                       0, section_context::get_size(), 'tceS'},
+        {FLT_STREAM_CONTEXT , 0, stream_context::cleanup , stream_context::get_size() , 'crtS'},
+        {FLT_SECTION_CONTEXT, 0, section_context::cleanup, section_context::get_size(), 'tceS'},
         {FLT_CONTEXT_END}
       };
 

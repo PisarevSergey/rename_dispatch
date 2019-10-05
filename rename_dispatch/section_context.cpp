@@ -1,7 +1,10 @@
 #include "common.h"
 #include "section_context.tmh"
 
-size_t section_context::get_size() { return sizeof(section_context::context); }
+void section_context::cleanup(PFLT_CONTEXT /*ctx*/, FLT_CONTEXT_TYPE /*ctx_type*/)
+{}
+
+constexpr size_t section_context::get_size() { return sizeof(section_context::context); }
 
 section_context::context* section_context::create_context(NTSTATUS& stat)
 {
@@ -10,6 +13,8 @@ section_context::context* section_context::create_context(NTSTATUS& stat)
   if (NT_SUCCESS(stat))
   {
     info_message(SECTION_CONTEXT, "section context allocation success");
+    RtlZeroMemory(ctx, section_context::get_size());
+    KeInitializeEvent(&static_cast<section_context::context*>(ctx)->work_finished, NotificationEvent, FALSE);
   }
   else
   {
@@ -18,4 +23,25 @@ section_context::context* section_context::create_context(NTSTATUS& stat)
   }
 
   return static_cast<section_context::context*>(ctx);
+}
+
+void section_context::context::close_section()
+{
+  if (section_handle)
+  {
+    ZwClose(section_handle);
+    section_handle = 0;
+  }
+
+  if (section_object)
+  {
+    ObDereferenceObject(section_object);
+    section_object = 0;
+  }
+}
+
+void section_context::context::wait_for_finished_work(PFLT_CALLBACK_DATA data)
+{
+  LARGE_INTEGER timeout = support::seconds_to_100_nanosec_units(-report_time_to_live_in_seconds);
+  FltCancellableWaitForSingleObject(&work_finished, &timeout, data);
 }

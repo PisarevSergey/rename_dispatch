@@ -36,8 +36,6 @@ namespace
     OBJECT_ATTRIBUTES oa;
     InitializeObjectAttributes(&oa, 0, OBJ_KERNEL_HANDLE, 0, 0);
 
-    HANDLE section_handle;
-    void* section_object;
     NTSTATUS stat = FltCreateSectionForDataScan(data->Iopb->TargetInstance,
       data->Iopb->TargetFileObject,
       sec_ctx,
@@ -47,14 +45,14 @@ namespace
       PAGE_READONLY,
       SEC_COMMIT,
       0,
-      &section_handle,
-      &section_object,
+      &sec_ctx->section_handle,
+      &sec_ctx->section_object,
       &rep.size_of_mapped_file);
     if (NT_SUCCESS(stat))
     {
       info_message(UM_REPORT_CLASS, "FltCreateSectionForDataScan success");
 
-      stat = init_section_handle_with_attaching_to_process_reporter(rep, section_object, reporter_proc);
+      stat = init_section_handle_with_attaching_to_process_reporter(rep, sec_ctx->section_object, reporter_proc);
       if (NT_SUCCESS(stat))
       {
         info_message(UM_REPORT_CLASS, "init_section_handle_with_attaching_to_process_reporter success");
@@ -63,30 +61,30 @@ namespace
       {
         error_message(UM_REPORT_CLASS, "init_section_handle_with_attaching_to_process_reporter failed with status %!STATUS!", stat);
       }
-
-      ZwClose(section_handle);
-      ObDereferenceObject(section_object);
-      FltCloseSectionForDataScan(sec_ctx);
     }
     else
     {
       error_message(UM_REPORT_CLASS, "FltCreateSectionForDataScan failed with status %!STATUS!", stat);
+      sec_ctx->section_handle = 0;
+      sec_ctx->section_object = 0;
     }
 
     return stat;
   }
 
 
-  NTSTATUS initialize_section_handle(PFLT_CALLBACK_DATA data, PEPROCESS reporter_proc, um_km_communication::rename_report& rename_report)
+  NTSTATUS initialize_section_handle(PFLT_CALLBACK_DATA data, PEPROCESS reporter_proc,
+    um_km_communication::rename_report& rename_report, section_context::context*& sec_ctx)
   {
     NTSTATUS stat(STATUS_UNSUCCESSFUL);
 
-    auto section_ctx = section_context::create_context(stat);
+    sec_ctx = section_context::create_context(stat);
     if (NT_SUCCESS(stat))
     {
+      ASSERT(sec_ctx);
       info_message(UM_REPORT_CLASS, "section_context::create_context success");
 
-      stat = initialize_section_handle_with_section_creation(section_ctx, data, reporter_proc, rename_report);
+      stat = initialize_section_handle_with_section_creation(sec_ctx, data, reporter_proc, rename_report);
       if (NT_SUCCESS(stat))
       {
         info_message(UM_REPORT_CLASS, "initialize_section_handle_with_section_creation success");
@@ -96,17 +94,19 @@ namespace
         error_message(UM_REPORT_CLASS, "initialize_section_handle_with_section_creation failed with status %!STATUS!", stat);
       }
 
-      FltReleaseContext(section_ctx);
+      FltReleaseContext(sec_ctx);
     }
     else
     {
+      ASSERT(0 == sec_ctx);
       error_message(UM_REPORT_CLASS, "section_context::create_context failed with status %!STATUS!", stat);
     }
 
     return stat;
   }
 
-  NTSTATUS init_rename_report(PFLT_CALLBACK_DATA data, PEPROCESS reporter_proc, um_km_communication::rename_report& rep)
+  NTSTATUS init_rename_report(PFLT_CALLBACK_DATA data, PEPROCESS reporter_proc,
+    um_km_communication::rename_report& rep, section_context::context*& sec_ctx)
   {
     static LONG64 report_number(0);
     rep.report_number = InterlockedIncrement64(&report_number);
@@ -181,7 +181,7 @@ namespace
 
     if (NT_SUCCESS(stat))
     {
-      stat = initialize_section_handle(data, reporter_proc, rep);
+      stat = initialize_section_handle(data, reporter_proc, rep, sec_ctx);
       if (NT_SUCCESS(stat))
       {
         info_message(UM_REPORT_CLASS, "initialize_section_handle success");
@@ -197,7 +197,7 @@ namespace
 
 }
 
-um_report_class::report::report(NTSTATUS& stat, PFLT_CALLBACK_DATA data) : reporter(nullptr)
+um_report_class::report::report(NTSTATUS& stat, PFLT_CALLBACK_DATA data) : reporter(nullptr), sec_ctx(nullptr)
 {
   do
   {
@@ -215,7 +215,7 @@ um_report_class::report::report(NTSTATUS& stat, PFLT_CALLBACK_DATA data) : repor
       break;
     }
 
-    stat = init_rename_report(data, reporter->get_eproc(), um_rename_report);
+    stat = init_rename_report(data, reporter->get_eproc(), um_rename_report, sec_ctx);
     if (NT_SUCCESS(stat))
     {
       info_message(UM_REPORT_CLASS, "init_rename_report success");
@@ -247,6 +247,14 @@ um_report_class::report::~report()
     }
 
     reporter->release();
+  }
+
+  if (sec_ctx)
+  {
+    KeSetEvent(&sec_ctx->work_finished, IO_NO_INCREMENT, FALSE);
+    sec_ctx->close_section();
+    FltCloseSectionForDataScan(sec_ctx);
+    sec_ctx = 0;
   }
 }
 
