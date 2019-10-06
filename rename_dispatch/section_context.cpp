@@ -13,7 +13,7 @@ section_context::context* section_context::create_context(NTSTATUS& stat)
   if (NT_SUCCESS(stat))
   {
     info_message(SECTION_CONTEXT, "section context allocation success");
-    RtlZeroMemory(ctx, section_context::get_size());
+    //RtlZeroMemory(ctx, section_context::get_size());
     KeInitializeEvent(&static_cast<section_context::context*>(ctx)->work_finished, NotificationEvent, FALSE);
   }
   else
@@ -23,21 +23,6 @@ section_context::context* section_context::create_context(NTSTATUS& stat)
   }
 
   return static_cast<section_context::context*>(ctx);
-}
-
-void section_context::context::close_section()
-{
-  if (section_handle)
-  {
-    ZwClose(section_handle);
-    section_handle = 0;
-  }
-
-  if (section_object)
-  {
-    ObDereferenceObject(section_object);
-    section_object = 0;
-  }
 }
 
 void section_context::context::wait_for_finished_work(PFLT_CALLBACK_DATA data)

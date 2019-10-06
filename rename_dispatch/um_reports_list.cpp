@@ -107,7 +107,7 @@ namespace
       {
         um_report_class::report* next_rep = static_cast<um_report_class::report*>(cur_rep->Flink);
 
-        if ((current_time.QuadPart - cur_rep->um_rename_report.time.QuadPart) > support::seconds_to_100_nanosec_units(age_in_seconds).QuadPart)
+        if ((current_time.QuadPart - cur_rep->get_um_rename_report()->time.QuadPart) > support::seconds_to_100_nanosec_units(age_in_seconds).QuadPart)
         {
           r = cur_rep;
           RemoveEntryList(r);

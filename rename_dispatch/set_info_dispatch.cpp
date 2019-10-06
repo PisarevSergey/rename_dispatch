@@ -177,7 +177,7 @@ set_info_dispatch::post(_Inout_  PFLT_CALLBACK_DATA       data,
       if (NT_SUCCESS(data->IoStatus.Status))
       {
         NTSTATUS stat(STATUS_INSUFFICIENT_RESOURCES);
-        auto report_for_um = new um_report_class::report(stat, data);
+        auto report_for_um = um_report_class::create_report(stat, data);
         if (NT_SUCCESS(stat))
         {
           get_driver()->get_reporter()->push_report(report_for_um);
@@ -201,7 +201,7 @@ set_info_dispatch::post(_Inout_  PFLT_CALLBACK_DATA       data,
     post_rename_dispatch(data, &work_item_ctx);
 
     NTSTATUS stat(STATUS_INSUFFICIENT_RESOURCES);
-    auto report_for_um = new um_report_class::report(stat, data);
+    auto report_for_um = um_report_class::create_report(stat, data);
     if (NT_SUCCESS(stat))
     {
       get_driver()->get_reporter()->push_report(report_for_um);

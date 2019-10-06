@@ -191,7 +191,7 @@ namespace
       um_report_class::report* current_rep = rep->pop_report();
       if (current_rep)
       {
-        stat = send_message_to_um(&current_rep->um_rename_report, sizeof(current_rep->um_rename_report), &timeout);
+        stat = send_message_to_um(current_rep->get_um_rename_report(), sizeof(*current_rep->get_um_rename_report()), &timeout);
         if (NT_SUCCESS(stat))
         {
           info_message(REPORTER, "send_message_to_um success");
