@@ -156,6 +156,8 @@ namespace
         static LONG64 report_number(0);
         um_rename_report.report_number = InterlockedIncrement64(&report_number);
 
+        um_rename_report.size_of_mapped_file = size_of_mapped_file;
+
         um_rename_report.pid = PsGetProcessId(IoThreadToProcess(data->Thread));
         info_message(UM_REPORT_CLASS, "pid: %p", um_rename_report.pid);
 
