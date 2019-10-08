@@ -36,6 +36,16 @@ namespace
     return stat;
   }
 
+  NTSTATUS section_notification_callback(PFLT_INSTANCE /*Instance*/,
+    PFLT_CONTEXT section_context,
+    PFLT_CALLBACK_DATA data)
+  {
+    section_context::context* ctx = static_cast<section_context::context*>(section_context);
+    ctx->wait_for_finished_work(data);
+    return STATUS_SUCCESS;
+  }
+
+
   class tracing_driver : public driver
   {
   public:
@@ -112,7 +122,7 @@ namespace
       freg.Version = FLT_REGISTRATION_VERSION;
       freg.FilterUnloadCallback = unload;
       freg.InstanceSetupCallback = attach;
-      freg.SectionNotificationCallback = section_notification_callback::callback;
+      freg.SectionNotificationCallback = section_notification_callback;
 
       const FLT_CONTEXT_REGISTRATION context_reg[] =
       {
