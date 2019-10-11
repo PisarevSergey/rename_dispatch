@@ -137,6 +137,7 @@
     <FilesToPackage Include="$(TargetPath)" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="cleanup_dispatch.cpp" />
     <ClCompile Include="create_dispatch.cpp" />
     <ClCompile Include="delay_operation.cpp" />
     <ClCompile Include="driver.cpp" />
@@ -155,6 +156,7 @@
     <ClCompile Include="um_report_class.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="cleanup_dispatch.h" />
     <ClInclude Include="common.h" />
     <ClInclude Include="create_dispatch.h" />
     <ClInclude Include="delay_operation.h" />
