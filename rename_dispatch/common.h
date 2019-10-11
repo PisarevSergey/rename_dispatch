@@ -20,5 +20,6 @@
 #include "set_info_dispatch.h"
 #include "support.h"
 #include "prev_mode_switcher.h"
+#include "delay_operation.h"
 
 const LONG report_time_to_live_in_seconds = 10;
