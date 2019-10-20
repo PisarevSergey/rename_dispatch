@@ -37,8 +37,10 @@ void delay_operation::do_delay(PFLT_CALLBACK_DATA data)
     break;
   case IRP_MJ_SET_INFORMATION:
   {
-    if ((FileRenameInformation   == data->Iopb->Parameters.SetFileInformation.FileInformationClass) ||
-        (FileRenameInformationEx == data->Iopb->Parameters.SetFileInformation.FileInformationClass))
+    if ((FileRenameInformation        == data->Iopb->Parameters.SetFileInformation.FileInformationClass) ||
+        (FileRenameInformationEx      == data->Iopb->Parameters.SetFileInformation.FileInformationClass) ||
+        (FileDispositionInformation   == data->Iopb->Parameters.SetFileInformation.FileInformationClass) ||
+        (FileDispositionInformationEx == data->Iopb->Parameters.SetFileInformation.FileInformationClass))
     {
       verbose_message(DELAY_OPERATION, "this is rename operation");
       make_delay = true;

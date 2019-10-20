@@ -76,6 +76,8 @@ set_info_dispatch::pre(_Inout_ PFLT_CALLBACK_DATA    data,
 
   do
   {
+    delay_operation::do_delay(data);
+
     if ((data->Iopb->Parameters.SetFileInformation.FileInformationClass != FileRenameInformation) &&
         (data->Iopb->Parameters.SetFileInformation.FileInformationClass != FileRenameInformationEx))
     {
@@ -101,8 +103,6 @@ set_info_dispatch::pre(_Inout_ PFLT_CALLBACK_DATA    data,
     }
     ASSERT(FLT_IS_IRP_OPERATION(data));
     info_message(SET_INFO_DISPATCH, "this is irp-based operation, continue dispatch");
-
-    delay_operation::do_delay(data);
 
     bool replace_if_exists_cleared(data->Iopb->Parameters.SetFileInformation.ReplaceIfExists ? true : false);
 
