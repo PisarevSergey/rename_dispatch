@@ -113,25 +113,63 @@ int wmain(int argc, wchar_t* argv[])
       if (ERROR_SUCCESS != error)
       {
         wcout << "failed to create and fill file " << src_file_path.c_str() << L" with error " << error << endl;
-        continue;
+        break;
       }
       wcout << L"successfully created and filled file " << src_file_path.c_str() << endl;
+
+      wchar_t target_directory_name[10];
+      fill_random_null_terminated_string(target_directory_name, sizeof(target_directory_name));
+      target_directory_name[8] = '\\';
+      wcout << L"target directory name is " << target_directory_name << endl;
+
+      const wstring target_directory_path(base_dir_name + target_directory_name);
+      wcout << L"target directory is " << target_directory_path.c_str() << endl;
+      if (CreateDirectoryW(target_directory_path.c_str(), 0))
+      {
+        wcout << L"target directory creation success" << endl;
+      }
+      else
+      {
+        error = GetLastError();
+        wcout << L"failed to create directory " << target_directory_path.c_str() << L" with error " << error << endl;
+        break;
+      }
 
       wchar_t target_file_name[10];
       fill_random_null_terminated_string(target_file_name, sizeof(target_file_name));
       wcout << L"target file name is " << target_file_name << endl;
 
-      const wstring target_file_path(base_dir_name + target_file_name);
+      const wstring target_file_path(target_directory_path + target_file_name);
       wcout << L"target file path is " << target_file_path.c_str() << endl;
 
       if (MoveFileW(src_file_path.c_str(), target_file_path.c_str()))
       {
         wcout << L"rename success" << endl;
+
+        if (DeleteFileW(target_file_path.c_str()))
+        {
+          wcout << L"delete file " << target_file_path.c_str() << L" success" << endl;
+          if (RemoveDirectoryW(target_directory_path.c_str()))
+          {
+            wcout << L"remove directory " << target_directory_path.c_str() << L" success" << endl;
+          }
+          else
+          {
+            error = GetLastError();
+            wcout << L"failed to remove directory " << target_directory_path.c_str() << L" with error " << error << endl;;
+          }
+        }
+        else
+        {
+          error = GetLastError();
+          wcout << L"failed to delete file " << target_file_path.c_str() << L" with error " << error << endl;
+        }
       }
       else
       {
         error = GetLastError();
         wcout << L"rename failed with error " << error << endl;
+        break;
       }
     }
 
