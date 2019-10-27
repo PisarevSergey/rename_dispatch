@@ -39,6 +39,13 @@ create_dispatch::pre(
     }
     verbose_message(CREATE_DISPATCH, "not page file open, continue");
 
+    bool skip(false);
+    if (NT_SUCCESS(ecp::skip_this_create(data, skip)) && skip)
+    {
+      verbose_message(CREATE_DISPATCH, "skipping for ECP reasons");
+      break;
+    }
+    verbose_message(CREATE_DISPATCH, "not skipping by ECP, continue");
 
     fs_stat = FLT_PREOP_SUCCESS_WITH_CALLBACK;
   } while (false);

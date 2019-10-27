@@ -1,5 +1,7 @@
 #pragma once
 
+#define INITGUID
+
 #include <fltKernel.h>
 
 #include "..\common_includes\um_km_communication.h"
@@ -13,6 +15,7 @@
 #include "um_reports_list.h"
 #include "reporter.h"
 #include "driver.h"
+#include "ecp.h"
 #include "create_dispatch.h"
 #include "operations.h"
 #include "rename_info.h"

@@ -17,6 +17,7 @@
         WPP_DEFINE_BIT(REPORTER)                                                   \
         WPP_DEFINE_BIT(PREV_MODE_SWITCHER)                                         \
         WPP_DEFINE_BIT(DELAY_OPERATION)                                            \
+        WPP_DEFINE_BIT(ECP)                                                        \
         WPP_DEFINE_BIT(DRIVER) )
 
 
